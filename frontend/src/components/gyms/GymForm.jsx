@@ -1,0 +1,46 @@
+import { useState } from 'react'
+import ColorPaletteEditor from './ColorPaletteEditor'
+
+export default function GymForm({ initial, onSubmit, onCancel }) {
+  const [name, setName] = useState(initial?.name ?? '')
+  const [colors, setColors] = useState(initial?.colors ?? [])
+  const [saving, setSaving] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!name.trim()) return
+    setSaving(true)
+    await onSubmit({ name: name.trim(), defaultGradeSystem: 'color', colors })
+    setSaving(false)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label className="input-label">암장 이름</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="예) 더클라임 홍대점"
+          className="input-field"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="input-label">난이도 색상 <span style={{ color: '#BBBBBB', fontWeight: 400 }}>(쉬운 순서대로)</span></label>
+        <ColorPaletteEditor colors={colors} onChange={setColors} />
+      </div>
+
+      <div className="flex gap-3 pt-1">
+        <button type="button" onClick={onCancel} className="btn-secondary flex-1">
+          취소
+        </button>
+        <button type="submit" disabled={saving || !name.trim()} className="btn-primary flex-1">
+          {saving ? '저장 중…' : '저장'}
+        </button>
+      </div>
+    </form>
+  )
+}
