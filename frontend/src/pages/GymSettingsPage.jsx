@@ -26,12 +26,12 @@ export default function GymSettingsPage() {
   }
 
   const handlePreset = async (preset) => {
-    const exists = gyms.some((g) => g.name === preset.name)
-    if (exists) {
-      alert(`'${preset.name}'이 이미 등록되어 있습니다.`)
-      return
+    const existing = gyms.find((g) => g.name === preset.name)
+    if (existing) {
+      await deleteGym(existing.id)
+    } else {
+      await addGym(preset)
     }
-    await addGym(preset)
   }
 
   // 폼 화면
@@ -78,12 +78,12 @@ export default function GymSettingsPage() {
               <button
                 key={preset.name}
                 onClick={() => handlePreset(preset)}
-                disabled={added}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                  added
-                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-default'
-                    : 'bg-white border-pink-200 text-primary-500 hover:bg-pink-50'
-                }`}
+                className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
+                style={{
+                  backgroundColor: added ? '#E8366F' : '#fff',
+                  color: added ? '#fff' : '#E8366F',
+                  borderColor: added ? '#E8366F' : '#F9839E',
+                }}
               >
                 {added ? '✓ ' : ''}{preset.name}
               </button>

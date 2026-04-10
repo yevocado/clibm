@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        await upsertUser(firebaseUser)
+        upsertUser(firebaseUser).catch((err) => console.error('upsertUser error:', err))
         setUser(firebaseUser)
       } else {
         setUser(null)

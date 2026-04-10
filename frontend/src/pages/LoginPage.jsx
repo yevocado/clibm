@@ -1,10 +1,10 @@
-import { signInWithRedirect } from 'firebase/auth'
+import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
 
 export default function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
-      await signInWithRedirect(auth, googleProvider)
+      await signInWithPopup(auth, googleProvider)
     } catch (err) {
       console.error('로그인 실패:', err)
     }
