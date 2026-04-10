@@ -5,7 +5,6 @@ import Navbar from './components/layout/Navbar'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import RoutesPage from './pages/RoutesPage'
-import VisitsPage from './pages/VisitsPage'
 import ProgressPage from './pages/ProgressPage'
 import GoalPage from './pages/GoalPage'
 import GymSettingsPage from './pages/GymSettingsPage'
@@ -41,7 +40,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/routes" element={<RoutesPage />} />
-            <Route path="/visits" element={<VisitsPage />} />
+            <Route path="/visits" element={<Navigate to="/routes" replace />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/goal" element={<GoalPage />} />
             <Route path="/gyms" element={<GymSettingsPage />} />

@@ -29,12 +29,12 @@ export function useGoals(userId) {
     return unsub
   }, [userId])
 
-  const addGoal = async (data) => {
-    await addDoc(collection(db, 'users', userId, 'goals'), {
+  const addGoal = (data) => {
+    addDoc(collection(db, 'users', userId, 'goals'), {
       ...data,
       achieved: false,
       createdAt: serverTimestamp(),
-    })
+    }).catch((err) => console.error('addGoal error:', err))
   }
 
   const updateGoal = async (goalId, updates) => {

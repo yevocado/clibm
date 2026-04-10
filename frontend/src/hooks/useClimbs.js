@@ -28,11 +28,11 @@ export function useClimbs(userId) {
     return unsub
   }, [userId])
 
-  const addClimb = async (data) => {
-    await addDoc(collection(db, 'users', userId, 'climbs'), {
+  const addClimb = (data) => {
+    addDoc(collection(db, 'users', userId, 'climbs'), {
       ...data,
       createdAt: serverTimestamp(),
-    })
+    }).catch((err) => console.error('addClimb error:', err))
   }
 
   const deleteClimb = async (climbId) => {

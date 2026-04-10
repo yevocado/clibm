@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useClimbs } from '../hooks/useClimbs'
-import { useVisits } from '../hooks/useVisits'
 import { useGoals } from '../hooks/useGoals'
 import PageShell from '../components/layout/PageShell'
 import DailyShareButton from '../components/share/DailyShareButton'
@@ -14,7 +13,6 @@ function getBrand(gymName) {
 export default function DashboardPage() {
   const { user } = useAuth()
   const { climbs } = useClimbs(user?.uid)
-  const { visits } = useVisits(user?.uid)
   const { goals } = useGoals(user?.uid)
   const navigate = useNavigate()
 
@@ -32,23 +30,27 @@ export default function DashboardPage() {
     if (!acc[key][lvKey]) {
       acc[key][lvKey] = { level: c.gradeLevel, label: c.grade, hex: c.gradeColor, count: 0 }
     }
-    acc[key][lvKey].count++
+    acc[key][lvKey].count += (c.count ?? 1)
     return acc
   }, {})
 
-  // ── 이번달 방문: 브랜드별 집계 ──
-  const visitsByBrand = visits
-    .filter((v) => v.date.startsWith(thisMonth))
-    .reduce((acc, v) => {
-      const brand = getBrand(v.gymName)
-      acc[brand] = (acc[brand] ?? 0) + 1
-      return acc
-    }, {})
+  // ── 이번달 방문: 클라임 기록에서 유니크 날짜+암장 → 브랜드별 집계 ──
+  const seenVisits = new Set()
+  const visitsByBrand = {}
+  thisMonthClimbs.forEach((c) => {
+    const key = `${c.date}_${c.gymId}`
+    if (seenVisits.has(key)) return
+    seenVisits.add(key)
+    const brand = getBrand(c.gymName)
+    visitsByBrand[brand] = (visitsByBrand[brand] ?? 0) + 1
+  })
 
-  // ── 최고레벨: 브랜드별 집계 ──
+  // ── 최고레벨: 브랜드별 집계 (레벨 + 색상) ──
   const bestByBrand = climbs.reduce((acc, c) => {
     const brand = getBrand(c.gymName)
-    if (!acc[brand] || c.gradeLevel > acc[brand]) acc[brand] = c.gradeLevel
+    if (!acc[brand] || c.gradeLevel > acc[brand].level) {
+      acc[brand] = { level: c.gradeLevel, hex: c.gradeColor, label: c.grade }
+    }
     return acc
   }, {})
 
@@ -58,6 +60,11 @@ export default function DashboardPage() {
   const goalProgress = activeGoal
     ? Math.min(100, Math.round((currentBestOverall / (activeGoal.targetLevel ?? 1)) * 100))
     : 0
+
+  // ── 오늘 방문한 암장 (인증샷용) ──
+  const seenToday = new Map()
+  todayClimbs.forEach((c) => seenToday.set(c.gymId, c.gymName))
+  const todayVisits = [...seenToday.entries()].map(([id, gymName]) => ({ id, gymName }))
 
   const firstName = user?.displayName?.split(' ')[0] ?? '유리'
 
@@ -96,7 +103,12 @@ export default function DashboardPage() {
 
       {/* 이번달 완등 — 암장별 색상 */}
       <div className="mb-5">
-        <p className="font-bold text-base mb-3">이번달 완등</p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="font-bold text-base">이번달 완등</p>
+          <p className="text-sm" style={{ color: '#999' }}>
+            {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
+          </p>
+        </div>
         {gymNames.length === 0 ? (
           <div className="card text-center py-6">
             <p className="text-gray-400 text-sm">이번달 완등 기록이 없어요</p>
@@ -170,12 +182,29 @@ export default function DashboardPage() {
         ) : (
           <div className="card">
             <div className="flex flex-wrap gap-x-6 gap-y-3">
-              {bestBrandNames.map((brand) => (
-                <div key={brand} className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">{brand}</span>
-                  <span className="font-bold" style={{ color: '#E8366F' }}>Lv.{bestByBrand[brand]}</span>
-                </div>
-              ))}
+              {bestBrandNames.map((brand) => {
+                const best = bestByBrand[brand]
+                return (
+                  <div key={brand} className="flex items-center gap-2.5">
+                    <div
+                      className="rounded-full shrink-0 flex items-center justify-center font-bold"
+                      style={{
+                        width: 32, height: 32,
+                        backgroundColor: best.hex,
+                        border: '2px solid #F0E0E5',
+                        fontSize: 11,
+                        color: isLight(best.hex) ? '#1A1A1A' : '#fff',
+                      }}
+                    >
+                      {best.level}
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400">{brand}</p>
+                      <p className="text-xs font-semibold" style={{ color: '#E8366F' }}>{best.label} · Lv.{best.level}</p>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
@@ -186,7 +215,7 @@ export default function DashboardPage() {
         <button onClick={() => navigate('/routes')} className="btn-primary w-full">
           + 기록하기
         </button>
-        <DailyShareButton todayClimbs={todayClimbs} />
+        <DailyShareButton todayClimbs={todayClimbs} todayVisits={todayVisits} />
       </div>
     </PageShell>
   )

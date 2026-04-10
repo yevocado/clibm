@@ -13,14 +13,16 @@ export default function RoutesPage() {
   const [showForm, setShowForm] = useState(false)
   const [filterGymId, setFilterGymId] = useState('all')
 
-  const handleAdd = async (data) => {
-    await addClimb(data)
+  const handleAdd = async (entries) => {
+    for (const data of entries) {
+      await addClimb(data)
+    }
     setShowForm(false)
   }
 
   if (showForm) {
     return (
-      <PageShell title="완등 기록 추가">
+      <PageShell title="기록 추가">
         <ClimbForm
           gyms={gyms}
           onSubmit={handleAdd}
@@ -51,7 +53,7 @@ export default function RoutesPage() {
 
   return (
     <PageShell
-      title="루트 기록"
+      title="방문 기록"
       action={
         <button onClick={() => setShowForm(true)} className="btn-primary text-sm px-4 py-2" style={{ height: 40 }}>
           + 기록 추가

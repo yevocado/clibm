@@ -32,6 +32,14 @@ export default function ClimbCard({ climb, onDelete }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="font-semibold text-gray-800 text-sm">{grade}</span>
+          {climb.count > 1 && (
+            <span
+              className="text-xs font-bold px-1.5 py-0.5 rounded-full"
+              style={{ background: '#F0E0E5', color: '#E8366F' }}
+            >
+              ×{climb.count}
+            </span>
+          )}
         </div>
         <p className="text-xs text-gray-400 mb-1">
           {gymName} · {formattedDate}

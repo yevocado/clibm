@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 
 // html2canvas로 캡처할 카드 — 화면에 안 보이게 오프스크린에 렌더링됨
-const ShareCard = forwardRef(function ShareCard({ date, gymGroups }, ref) {
+const ShareCard = forwardRef(function ShareCard({ date, gymGroups, todayVisits = [] }, ref) {
   const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -38,8 +38,35 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups }, ref) {
         <p style={{ fontSize: 14, opacity: 0.85 }}>{formattedDate}</p>
       </div>
 
-      {/* 암장별 내용 */}
+      {/* 바디 */}
       <div style={{ padding: '24px 28px' }}>
+
+        {/* 오늘 방문 */}
+        {todayVisits.length > 0 && (
+          <div style={{ marginBottom: gymGroups.length > 0 ? 20 : 0 }}>
+            <p style={{
+              fontSize: 11, fontWeight: 700, color: '#BBBBBB',
+              letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase',
+            }}>
+              오늘 방문
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {todayVisits.map((v) => (
+                <span key={v.id} style={{
+                  background: '#FFF0F4',
+                  border: '1px solid #F0E0E5',
+                  borderRadius: 20,
+                  padding: '5px 13px',
+                  fontSize: 12, fontWeight: 700, color: '#E8366F',
+                }}>
+                  {v.gymName}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 암장별 완등 */}
         {gymGroups.map((gym) => {
           const gymTotal = gym.colors.reduce((s, c) => s + c.count, 0)
           return (
@@ -48,23 +75,16 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups }, ref) {
                 <p style={{ fontSize: 20, fontWeight: 800, color: '#1A1A1A' }}>{gym.gymName}</p>
                 <p style={{ fontSize: 13, color: '#E8366F', fontWeight: 700 }}>{gymTotal}개</p>
               </div>
-
-              {/* 색상별 원 + 개수 */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
                 {gym.colors.map((c) => (
                   <div key={c.level} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
                     <div
                       style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: '50%',
+                        width: 44, height: 44, borderRadius: '50%',
                         backgroundColor: c.hex,
                         border: '2px solid #F0E0E5',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 16,
-                        fontWeight: 800,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 16, fontWeight: 800,
                         color: isLight(c.hex) ? '#1A1A1A' : '#fff',
                       }}
                     >
@@ -78,14 +98,19 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups }, ref) {
           )
         })}
 
-        {/* 구분선 */}
-        <div style={{ height: 1, background: '#F0E0E5', margin: '4px 0 16px' }} />
-
         {/* 총 완등 */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: 15, color: '#666', fontWeight: 500 }}>총 완등</p>
-          <p style={{ fontSize: 28, fontWeight: 900, color: '#E8366F' }}>{totalCount}<span style={{ fontSize: 14, fontWeight: 600, marginLeft: 3, color: '#999' }}>개</span></p>
-        </div>
+        {gymGroups.length > 0 && (
+          <>
+            <div style={{ height: 1, background: '#F0E0E5', margin: '4px 0 16px' }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ fontSize: 15, color: '#666', fontWeight: 500 }}>총 완등</p>
+              <p style={{ fontSize: 28, fontWeight: 900, color: '#E8366F' }}>
+                {totalCount}
+                <span style={{ fontSize: 14, fontWeight: 600, marginLeft: 3, color: '#999' }}>개</span>
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* 푸터 */}
@@ -96,7 +121,6 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups }, ref) {
   )
 })
 
-// 밝은 색상이면 검정 텍스트 사용
 function isLight(hex) {
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)

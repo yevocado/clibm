@@ -28,11 +28,11 @@ export function useVisits(userId) {
     return unsub
   }, [userId])
 
-  const addVisit = async (data) => {
-    await addDoc(collection(db, 'users', userId, 'visits'), {
+  const addVisit = (data) => {
+    addDoc(collection(db, 'users', userId, 'visits'), {
       ...data,
       createdAt: serverTimestamp(),
-    })
+    }).catch((err) => console.error('addVisit error:', err))
   }
 
   const deleteVisit = async (visitId) => {

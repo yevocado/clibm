@@ -20,13 +20,17 @@ export default function VisitForm({ gyms, onSubmit, onCancel }) {
     e.preventDefault()
     if (!gymId) return
     setSaving(true)
-    await onSubmit({
-      date,
-      gymId,
-      gymName: selectedGym.name,
-      memo: memo.trim(),
-    })
-    setSaving(false)
+    try {
+      await onSubmit({
+        date,
+        gymId,
+        gymName: selectedGym.name,
+        memo: memo.trim(),
+      })
+    } catch (err) {
+      console.error(err)
+      setSaving(false)
+    }
   }
 
   return (

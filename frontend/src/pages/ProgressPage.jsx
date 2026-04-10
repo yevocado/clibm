@@ -53,31 +53,29 @@ export default function ProgressPage() {
     return list
   }, [climbs, filterGymId, months])
 
-  // 주별 최고 레벨
+  // 날짜별 최고 레벨
   const chartData = useMemo(() => {
-    const weekMap = {}
+    const dateMap = {}
     filtered.forEach((c) => {
-      const wk = getWeekKey(c.date)
       const lv = c.gradeLevel ?? 0
       if (!lv) return
-      if (weekMap[wk] === undefined || lv > weekMap[wk]) weekMap[wk] = lv
+      if (!dateMap[c.date] || lv > dateMap[c.date]) dateMap[c.date] = lv
     })
-    return Object.entries(weekMap)
+    return Object.entries(dateMap)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([week, maxV]) => ({
-        week: week.slice(5),
-        maxV,
-      }))
+      .map(([date, maxV]) => ({ week: date.slice(5), maxV }))
   }, [filtered])
 
   // 요약 통계
-  const totalCount = filtered.length
+  const totalCount = filtered.reduce((sum, c) => sum + (c.count ?? 1), 0)
   const bestNum = filtered.reduce((best, c) => {
     const lv = c.gradeLevel ?? 0
     return lv > best ? lv : best
   }, 0)
   const thisMonth = new Date().toISOString().slice(0, 7)
-  const thisMonthCount = climbs.filter((c) => c.date.startsWith(thisMonth)).length
+  const thisMonthCount = climbs
+    .filter((c) => c.date.startsWith(thisMonth))
+    .reduce((sum, c) => sum + (c.count ?? 1), 0)
 
   return (
     <PageShell title="성장 차트">
@@ -153,14 +151,14 @@ export default function ProgressPage() {
         <div className="card text-center py-12">
           <div className="text-4xl mb-3">📈</div>
           <p className="text-gray-500 font-medium">데이터가 부족해요</p>
-          <p className="text-gray-400 text-sm mt-1">2주 이상 기록하면 그래프가 나타나요</p>
+          <p className="text-gray-400 text-sm mt-1">이틀 이상 기록하면 그래프가 나타나요</p>
         </div>
       ) : (
         <div className="card">
-          <p className="text-sm font-semibold text-gray-600 mb-4">주별 최고 V등급</p>
+          <p className="text-sm font-semibold text-gray-600 mb-4">날짜별 최고 레벨</p>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F0E0E5" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEB" />
               <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#999' }} />
               <YAxis
                 domain={[1, 11]}

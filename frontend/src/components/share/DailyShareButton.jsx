@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
-import { Camera } from 'lucide-react'
+import { Camera, Video } from 'lucide-react'
 import ShareCard from './ShareCard'
+import CameraOverlay from './CameraOverlay'
 
 function buildGymGroups(todayClimbs, gyms) {
   // gymId 기준으로 묶기
@@ -19,7 +20,7 @@ function buildGymGroups(todayClimbs, gyms) {
         count: 0,
       }
     }
-    gymMap[c.gymId].colorMap[key].count++
+    gymMap[c.gymId].colorMap[key].count += (c.count ?? 1)
   })
 
   return Object.values(gymMap).map((g) => ({
@@ -28,14 +29,15 @@ function buildGymGroups(todayClimbs, gyms) {
   }))
 }
 
-export default function DailyShareButton({ todayClimbs }) {
+export default function DailyShareButton({ todayClimbs, todayVisits = [] }) {
   const cardRef = useRef(null)
   const [saving, setSaving] = useState(false)
+  const [showCamera, setShowCamera] = useState(false)
 
   const today = new Date().toISOString().slice(0, 10)
   const gymGroups = buildGymGroups(todayClimbs, [])
 
-  if (todayClimbs.length === 0) return null
+  if (todayClimbs.length === 0 && todayVisits.length === 0) return null
 
   const handleSave = async () => {
     if (!cardRef.current || saving) return
@@ -81,7 +83,7 @@ export default function DailyShareButton({ todayClimbs }) {
           zIndex: -1,
         }}
       >
-        <ShareCard ref={cardRef} date={today} gymGroups={gymGroups} />
+        <ShareCard ref={cardRef} date={today} gymGroups={gymGroups} todayVisits={todayVisits} />
       </div>
 
       <button
@@ -93,6 +95,19 @@ export default function DailyShareButton({ todayClimbs }) {
         <Camera size={18} />
         {saving ? '저장 중…' : '오늘 기록 이미지로 저장'}
       </button>
+
+      <button
+        onClick={() => setShowCamera(true)}
+        className="btn-secondary w-full flex items-center justify-center gap-2"
+        style={{ height: 48 }}
+      >
+        <Video size={18} />
+        카메라에 기록 띄우기
+      </button>
+
+      {showCamera && (
+        <CameraOverlay gymGroups={gymGroups} todayVisits={todayVisits} onClose={() => setShowCamera(false)} />
+      )}
     </>
   )
 }

@@ -1,5 +1,9 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from 'firebase/firestore'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -13,6 +17,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 
-export const db = getFirestore(app)
+// 오프라인 퍼시스턴스 활성화: 새로고침해도 데이터 유지, addDoc이 즉시 resolve됨
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+})
 export const auth = getAuth(app)
 export const googleProvider = new GoogleAuthProvider()
