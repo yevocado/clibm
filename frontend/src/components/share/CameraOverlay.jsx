@@ -98,9 +98,10 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
       const cardEl = overlayCardRef.current
       const cardRect = cardEl.getBoundingClientRect()
       const { default: html2canvas } = await import('html2canvas')
+      await document.fonts.ready
       const cardCanvas = await html2canvas(cardEl, {
         scale: DPR * 2,
-        backgroundColor: 'rgba(10,10,10,0.85)',
+        backgroundColor: '#fff',
         useCORS: true,
         logging: false,
       })
@@ -111,17 +112,8 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
         cardRect.width * DPR, cardRect.height * DPR,
       )
 
-      canvas.toBlob(async (blob) => {
-        const file = new File([blob], `유리의벽_${todayStr}.png`, { type: 'image/png' })
-        if (navigator.canShare?.({ files: [file] })) {
-          try {
-            await navigator.share({ files: [file], title: '유리의 벽 — 오늘의 완등' })
-          } catch (e) {
-            if (e.name !== 'AbortError') fallbackDownload(blob, todayStr)
-          }
-        } else {
-          fallbackDownload(blob, todayStr)
-        }
+      canvas.toBlob((blob) => {
+        fallbackDownload(blob, todayStr)
         setCapturing(false)
       }, 'image/png')
     } catch (e) {

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
-import { Camera, Download, Video } from 'lucide-react'
+import { Camera, Download } from 'lucide-react'
 import ShareCard from './ShareCard'
 import CameraOverlay from './CameraOverlay'
 
@@ -53,23 +53,15 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
     if (!captureRef.current || saving) return
     setSaving(true)
     try {
+      await document.fonts.ready
       const canvas = await html2canvas(captureRef.current, {
         scale: 3,
         backgroundColor: null,
         useCORS: true,
         logging: false,
       })
-      canvas.toBlob(async (blob) => {
-        const file = new File([blob], `유리의벽_${today}.png`, { type: 'image/png' })
-        if (navigator.canShare?.({ files: [file] })) {
-          try {
-            await navigator.share({ files: [file], title: '유리의 벽 — 오늘의 완등' })
-          } catch (e) {
-            if (e.name !== 'AbortError') fallbackDownload(blob, today)
-          }
-        } else {
-          fallbackDownload(blob, today)
-        }
+      canvas.toBlob((blob) => {
+        fallbackDownload(blob, today)
         setSaving(false)
       }, 'image/png')
     } catch (e) {

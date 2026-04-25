@@ -1,126 +1,214 @@
-# 유리의 벽 — Design System
+# Design System
 
-## 무드 & 톤
-- **키워드**: 대담함, 성장, 여성스럽지만 강인함, 클라이밍의 날 것 에너지
-- **방향**: 핑크 기반이지만 파스텔이 아닌 채도 있는 핑크로 힘 있게. 군더더기 없이 클린하게.
+> Pretendard · Neutral Pink · Minimal
 
 ---
 
-## 컬러 팔레트
+## 1. Color Palette
 
-### 메인 컬러
-| 이름 | HEX | 용도 |
-|------|-----|------|
-| Primary | `#E8366F` | 버튼, 강조, CTA |
-| Primary Dark | `#C4234F` | 호버, 액티브 상태 |
-| Primary Light | `#F9839E` | 배지, 태그, 보조 강조 |
+### Primary — Pink
 
-### 서브 컬러
-| 이름 | HEX | 용도 |
-|------|-----|------|
-| Background | `#FAFAFA` | 전체 배경 |
-| Surface | `#FFFFFF` | 카드, 모달 배경 |
-| Surface Muted | `#FFF0F4` | 핑크 틴트 배경 |
-| Border | `#F0E0E5` | 카드 테두리, 구분선 |
+| Token | Hex | 용도 |
+|-------|-----|------|
+| `pink-50` | `#FBF0F4` | 배경, hover fill, badge bg |
+| `pink-100` | `#F4C0D1` | 라이트 보더, 선택 상태 |
+| `pink-150` | `#EDD0DC` | 인풋 보더, 디바이더 |
+| `pink-200` | `#ED93B1` | 비활성 강조, 아이콘 |
+| `pink-300` | `#D88CA6` | **Primary button bg** |
+| `pink-400` | `#D4537E` | hover 상태, 링크 |
+| `pink-500` | `#B5607E` | badge text, strong 강조 |
+| `pink-600` | `#993556` | 다크 강조, 오버레이 텍스트 |
 
-### 텍스트
-| 이름 | HEX | 용도 |
-|------|-----|------|
-| Text Primary | `#1A1A1A` | 본문, 제목 |
-| Text Secondary | `#666666` | 부제목, 설명 |
-| Text Disabled | `#BBBBBB` | 비활성 텍스트 |
+### Neutral — Warm Gray
 
-### 시스템 컬러
-| 이름 | HEX | 용도 |
-|------|-----|------|
-| Success | `#22C55E` | 완등, 목표 달성 |
-| Warning | `#F59E0B` | 진행 중 |
-| Error | `#EF4444` | 삭제, 오류 |
+| Token | Hex | 용도 |
+|-------|-----|------|
+| `neutral-50` | `#F5F3F0` | 페이지 배경 |
+| `neutral-100` | `#D3D1C7` | 비활성 보더 |
+| `neutral-400` | `#888780` | 보조 텍스트 |
+| `neutral-800` | `#444441` | 본문 텍스트 (다크) |
 
----
+### Semantic
 
-## 타이포그래피
-
-**폰트**: Pretendard (한글+영문 통합)
-
-| 이름 | 크기 | 굵기 | 용도 |
-|------|------|------|------|
-| Display | 32px | 700 Bold | 메인 타이틀 |
-| Heading 1 | 24px | 700 Bold | 페이지 제목 |
-| Heading 2 | 20px | 600 SemiBold | 섹션 제목 |
-| Heading 3 | 16px | 600 SemiBold | 카드 제목 |
-| Body | 16px | 400 Regular | 본문 |
-| Body Small | 14px | 400 Regular | 설명, 메모 |
-| Caption | 12px | 400 Regular | 날짜, 라벨 |
+| 역할 | Token | 비고 |
+|------|-------|------|
+| 텍스트 (기본) | `var(--color-text-primary)` | |
+| 텍스트 (보조) | `var(--color-text-secondary)` | |
+| 텍스트 (힌트) | `var(--color-text-tertiary)` | |
+| 보더 (기본) | `var(--color-border-tertiary)` | |
+| 배경 (서피스) | `var(--color-background-primary)` | |
+| 배경 (서브) | `var(--color-background-secondary)` | |
 
 ---
 
-## 컴포넌트
+## 2. Typography
 
-### 버튼
-- **Primary**: 배경 `#E8366F`, 텍스트 흰색, 반경 12px, 높이 48px
-- **Secondary**: 테두리 `#E8366F`, 텍스트 `#E8366F`, 배경 투명
-- **Ghost**: 텍스트만, 배경 없음
-- **상태**: hover 시 Primary Dark, disabled 시 opacity 40%
+**Font family:** `Pretendard` (fallback: `-apple-system, sans-serif`)
 
-### 카드
-- 배경 `#FFFFFF`, 테두리 `#F0E0E5` 1px, 반경 16px
-- 패딩 20px, 그림자 `0 2px 12px rgba(232, 54, 111, 0.08)`
-
-### 난이도 배지
-- 색상별 원형 배지 (지름 28px)
-- V등급 텍스트는 배지 옆에 Caption 사이즈로 표기
-
-### 입력 필드
-- 높이 48px, 반경 12px
-- 테두리 `#F0E0E5`, 포커스 시 `#E8366F`
-- 라벨은 입력 필드 위에 Body Small
-
-### 진행률 바
-- 배경 `#FFF0F4`, 채움 `#E8366F`
-- 높이 8px, 반경 99px (풀 라운드)
-
-### 하단 탭 vs 상단 네비
-- 상단 왼쪽에 로고/앱 이름 고정
-- 오른쪽에 프로필/설정 아이콘
-- 페이지 이동은 상단 탭 or 사이드 드로어
-
----
-
-## 레이아웃
-
-### 기본 구조
-```
-┌─────────────────────────────┐
-│  유리의 벽    [탭][탭][탭] ⚙️  │  ← 상단 네비 (좌측 로고)
-├─────────────────────────────┤
-│                             │
-│         페이지 컨텐츠         │
-│                             │
-│  [카드]  [카드]              │
-│  [카드]  [카드]              │
-│                             │
-└─────────────────────────────┘
+```css
+font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 ```
 
-### 그리드
-- 모바일: 1열, 패딩 16px
-- 태블릿+: 2열, 패딩 24px
-- 최대 너비: 768px (모바일 중심)
+### Type Scale
 
-### 간격 체계
-| 이름 | 값 |
-|------|-----|
-| xs | 4px |
-| sm | 8px |
-| md | 16px |
-| lg | 24px |
-| xl | 32px |
-| 2xl | 48px |
+| 이름 | Size | Weight | Line Height | 용도 |
+|------|------|--------|-------------|------|
+| `h1` | 32px | 700 | 1.25 | 페이지 타이틀 |
+| `h2` | 24px | 600 | 1.35 | 섹션 제목 |
+| `h3` | 18px | 600 | 1.4 | 카드/모달 제목 |
+| `body` | 15px | 400 | 1.7 | 기본 본문 |
+| `small` | 13px | 400 | 1.6 | 보조 설명, 날짜 |
+| `label` | 11px | 500 | 1.0 | 섹션 레이블 (uppercase + letter-spacing: 0.08em) |
 
 ---
 
-## 아이콘
-- 라이브러리: `lucide-react`
-- 사이즈: 20px (기본), 24px (네비), 16px (인라인)
-- 컬러: 컨텍스트에 따라 Text Primary or Primary
+## 3. Spacing Scale
+
+Base unit: `4px`
+
+| Token | Size | 용도 |
+|-------|------|------|
+| `spacing-1` | 4px | 아이콘 내부 간격 |
+| `spacing-2` | 8px | 컴팩트 패딩, gap |
+| `spacing-3` | 12px | 버튼 내부 수직 패딩 |
+| `spacing-4` | 16px | 카드 패딩, 컴포넌트 gap |
+| `spacing-6` | 24px | 섹션 내 여백 |
+| `spacing-8` | 32px | 카드 간격, 섹션 시작 |
+| `spacing-12` | 48px | 섹션 간격 |
+| `spacing-16` | 64px | 페이지 레벨 여백 |
+
+---
+
+## 4. Border Radius
+
+| Token | Size | 용도 |
+|-------|------|------|
+| `radius-xs` | 4px | 배지, 태그, 소형 요소 |
+| `radius-md` | 8px | 버튼, 인풋, 소형 카드 |
+| `radius-lg` | 12px | 카드, 모달 |
+| `radius-xl` | 16px | 시트, 바텀 드로어 |
+| `radius-full` | 9999px | 칩, 아바타, 라운드 버튼 |
+
+---
+
+## 5. Components
+
+### Button
+
+```css
+/* Primary */
+background: #D88CA6;
+color: #fff;
+border: none;
+border-radius: 8px;
+padding: 10px 20px;
+font-size: 14px;
+font-weight: 500;
+
+/* Secondary */
+background: transparent;
+color: #D88CA6;
+border: 1.5px solid #D88CA6;
+border-radius: 8px;
+padding: 10px 20px;
+
+/* Ghost */
+background: #FBF0F4;
+color: #B5607E;
+border: none;
+border-radius: 8px;
+padding: 10px 20px;
+```
+
+**상태 규칙**
+- `hover`: Primary → `#D4537E`, Secondary border → `#D4537E`
+- `disabled`: opacity `0.4`, cursor `not-allowed`
+- `focus-visible`: `box-shadow: 0 0 0 3px rgba(216,140,166,0.3)`
+
+---
+
+### Input
+
+```css
+border: 1px solid #EDD0DC;
+border-radius: 8px;
+padding: 10px 14px;
+font-size: 14px;
+font-family: 'Pretendard', sans-serif;
+background: var(--color-background-primary);
+
+/* focus */
+border-color: #D88CA6;
+box-shadow: 0 0 0 3px rgba(216,140,166,0.15);
+```
+
+---
+
+### Card
+
+```css
+background: var(--color-background-primary);
+border: 0.5px solid #EDD0DC;
+border-radius: 12px;
+padding: 20px;
+```
+
+---
+
+### Badge / Tag
+
+| 종류 | Background | Text color |
+|------|-----------|------------|
+| Pink (filled) | `#FBF0F4` | `#B5607E` |
+| Neutral | `var(--color-background-secondary)` | `var(--color-text-secondary)` |
+| Outline | `transparent` | `#D88CA6`, border `#EDD0DC` |
+
+```css
+font-size: 11px;
+font-weight: 500;
+border-radius: 4px;
+padding: 3px 10px;
+```
+
+---
+
+## 6. Layout Rules
+
+### Max Width
+
+| 컨텍스트 | Max Width |
+|---------|-----------|
+| 페이지 컨텐츠 | `720px` |
+| 카드 그리드 | `100%` (grid) |
+| 모달 | `480px` |
+| 바텀 시트 | `100%` |
+
+### Grid
+
+```css
+/* 기본 2열 카드 그리드 */
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 16px;
+```
+
+### Z-index
+
+| 레이어 | Value |
+|--------|-------|
+| 기본 콘텐츠 | `0` |
+| 드롭다운 | `100` |
+| 오버레이 | `200` |
+| 모달 | `300` |
+| 토스트 | `400` |
+
+---
+
+## 7. Design Rules
+
+- **핑크는 강조에만** — 기본 텍스트와 레이아웃은 뉴트럴. 핑크는 CTA, 선택 상태, 배지에 집중 사용.
+- **여백 우선** — 좁은 여백보다 넉넉한 여백. 기본 섹션 gap은 `48px`.
+- **보더는 연하게** — `0.5px` 또는 `1px`, 색상은 `pink-150` 또는 `--color-border-tertiary`.
+- **텍스트 위계** — H1/H2/H3 + body + small + label, 최대 3단계만 한 화면에 혼용.
+- **폰트 웨이트** — 400 (본문), 500 (레이블/버튼), 600 (제목), 700 (히어로 타이틀)만 사용.
+- **다크모드** — CSS 변수 기반으로 구현. 하드코딩 hex는 pink 팔레트 내에서만 허용.
