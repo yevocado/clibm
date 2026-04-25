@@ -18,7 +18,7 @@ function fallbackDownload(blob, date) {
   URL.revokeObjectURL(url)
 }
 
-export default function CameraOverlay({ gymGroups, todayVisits = [], onClose }) {
+export default function CameraOverlay({ gymGroups, todayVisits = [], userName = '나', onClose }) {
   const videoRef = useRef(null)
   const streamRef = useRef(null)
   const overlayCardRef = useRef(null)
@@ -67,14 +67,12 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], onClose }) 
   const handleCapture = async () => {
     if (capturing || !videoRef.current || !overlayCardRef.current) return
     setCapturing(true)
-
     try {
       const video = videoRef.current
       const W = window.innerWidth
       const H = window.innerHeight
       const DPR = window.devicePixelRatio || 1
 
-      // 1. 비디오 프레임 → 캔버스
       const canvas = document.createElement('canvas')
       canvas.width = W * DPR
       canvas.height = H * DPR
@@ -97,11 +95,8 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], onClose }) 
         ctx.drawImage(video, ox * DPR, oy * DPR, sw * DPR, sh * DPR)
       }
 
-      // 2. 오버레이 카드 → canvas로 합성
       const cardEl = overlayCardRef.current
       const cardRect = cardEl.getBoundingClientRect()
-
-      // html2canvas는 backdrop-filter 미지원 → 카드 배경을 solid로 덮어서 캡처
       const { default: html2canvas } = await import('html2canvas')
       const cardCanvas = await html2canvas(cardEl, {
         scale: DPR * 2,
@@ -112,13 +107,10 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], onClose }) 
 
       ctx.drawImage(
         cardCanvas,
-        cardRect.left * DPR,
-        cardRect.top * DPR,
-        cardRect.width * DPR,
-        cardRect.height * DPR,
+        cardRect.left * DPR, cardRect.top * DPR,
+        cardRect.width * DPR, cardRect.height * DPR,
       )
 
-      // 3. 저장
       canvas.toBlob(async (blob) => {
         const file = new File([blob], `유리의벽_${todayStr}.png`, { type: 'image/png' })
         if (navigator.canShare?.({ files: [file] })) {
@@ -173,144 +165,132 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], onClose }) 
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
         padding: '52px 20px 20px',
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%)',
+        background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <div>
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11, fontWeight: 600, letterSpacing: 0.5, marginBottom: 2 }}>TODAY</p>
-          <p style={{ color: '#fff', fontSize: 15, fontWeight: 800, letterSpacing: -0.3 }}>{todayLabel}</p>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>TODAY</p>
+          <p style={{ color: '#fff', fontSize: 15, fontWeight: 700, letterSpacing: -0.3 }}>{todayLabel}</p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={handleFlip} disabled={flipping} style={{
-            width: 42, height: 42, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
-            color: '#fff', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'transform 0.3s',
-            transform: flipping ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}>
+          <button
+            onClick={handleFlip}
+            disabled={flipping}
+            style={{
+              width: 42, height: 42, borderRadius: '50%',
+              background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)',
+              color: '#fff', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'transform 0.3s',
+              transform: flipping ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          >
             <RefreshCw size={18} />
           </button>
-          <button onClick={onClose} style={{
-            width: 42, height: 42, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
-            color: '#fff', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: 42, height: 42, borderRadius: '50%',
+              background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)',
+              color: '#fff', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
             <X size={20} />
           </button>
         </div>
       </div>
 
-      {/* 하단: 오버레이 카드 + 셔터 */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
-        paddingBottom: 32,
-      }}>
-        {/* 오버레이 카드 */}
-        <div ref={overlayCardRef} style={{ margin: '0 20px 24px' }}>
+      {/* 우하단: 오버레이 카드 (작은 모서리 카드) */}
+      <div
+        ref={overlayCardRef}
+        style={{
+          position: 'absolute', bottom: 110, right: 20, zIndex: 10,
+          width: 180,
+        }}
+      >
+        <div style={{
+          background: 'rgba(255,255,255,0.75)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.9)',
+          borderRadius: 16,
+          padding: '12px 14px 10px',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+        }}>
+          {/* 헤더 */}
           <div style={{
-            background: 'rgba(8, 8, 8, 0.6)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.18)',
-            borderRadius: 24,
-            padding: '18px 20px 16px',
-            color: '#fff',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: 8, paddingBottom: 8,
+            borderBottom: '0.5px solid rgba(0,0,0,0.08)',
           }}>
-            {/* 헤더 */}
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              marginBottom: 14, paddingBottom: 14,
-              borderBottom: '1px solid rgba(255,255,255,0.1)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{
-                  width: 28, height: 28, borderRadius: 8,
-                  background: 'linear-gradient(135deg, #E8366F, #FF6B9E)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
-                }}>🧗</div>
-                <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: -0.3 }}>유리의 벽</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 900, fontSize: 28, color: '#FF6B9E', lineHeight: 1 }}>{totalCount}</span>
-                <span style={{ fontSize: 13, fontWeight: 600, marginLeft: 3, color: 'rgba(255,255,255,0.5)' }}>개</span>
+            <span style={{ fontWeight: 700, fontSize: 12, color: '#444441', letterSpacing: -0.3 }}>
+              🧗 {userName}의 벽
+            </span>
+            <span style={{ fontWeight: 700, fontSize: 18, color: '#B5607E', lineHeight: 1 }}>
+              {totalCount}<span style={{ fontSize: 10, fontWeight: 500, color: '#888780', marginLeft: 2 }}>개</span>
+            </span>
+          </div>
+
+          {/* 날짜 */}
+          <p style={{ fontSize: 10, color: '#888780', fontWeight: 500, marginBottom: 8 }}>{todayLabel}</p>
+
+          {/* 암장별 색상 */}
+          {gymGroups.map((gym, i) => (
+            <div key={gym.gymName} style={{ marginBottom: i < gymGroups.length - 1 ? 8 : 0 }}>
+              <p style={{ fontSize: 9, fontWeight: 500, color: '#B5607E', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 6 }}>
+                {gym.gymName}
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {gym.colors.map((c) => (
+                  <div key={c.level} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: '50%',
+                      backgroundColor: c.hex,
+                      border: '1px solid rgba(0,0,0,0.08)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 11, fontWeight: 700,
+                      color: isLight(c.hex) ? '#444441' : '#fff',
+                    }}>{c.count}</div>
+                    <span style={{ fontSize: 8, color: '#888780', fontWeight: 500 }}>{c.label}</span>
+                  </div>
+                ))}
               </div>
             </div>
-
-            {/* 오늘 방문 */}
-            {todayVisits.length > 0 && (
-              <div style={{
-                marginBottom: gymGroups.length > 0 ? 14 : 0,
-                paddingBottom: gymGroups.length > 0 ? 14 : 0,
-                borderBottom: gymGroups.length > 0 ? '1px solid rgba(255,255,255,0.1)' : 'none',
-              }}>
-                <p style={{ fontSize: 11, fontWeight: 700, marginBottom: 8, color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3 }}>오늘 방문</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {todayVisits.map((v) => (
-                    <span key={v.id} style={{
-                      background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)',
-                      borderRadius: 20, padding: '5px 13px', fontSize: 12, fontWeight: 700, color: '#fff',
-                    }}>{v.gymName}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 암장별 색상 */}
-            {gymGroups.map((gym, i) => (
-              <div key={gym.gymName} style={{ marginBottom: i < gymGroups.length - 1 ? 14 : 0 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, marginBottom: 10, color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3 }}>
-                  {gym.gymName}
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                  {gym.colors.map((c) => (
-                    <div key={c.level} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
-                      <div style={{
-                        width: 40, height: 40, borderRadius: '50%',
-                        backgroundColor: c.hex, border: '2px solid rgba(255,255,255,0.5)',
-                        boxShadow: `0 2px 12px ${c.hex}66`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 14, fontWeight: 900,
-                        color: isLight(c.hex) ? '#1A1A1A' : '#fff',
-                      }}>{c.count}</div>
-                      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>{c.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
+      </div>
 
-        {/* 셔터 버튼 */}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <button
-            onClick={handleCapture}
-            disabled={capturing || !!error}
-            style={{
-              width: 70, height: 70, borderRadius: '50%',
-              background: capturing ? 'rgba(255,255,255,0.4)' : '#fff',
-              border: '4px solid rgba(255,255,255,0.5)',
-              cursor: capturing ? 'default' : 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
-              transition: 'transform 0.1s, background 0.15s',
-              transform: capturing ? 'scale(0.92)' : 'scale(1)',
-            }}
-          >
-            {capturing && (
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%',
-                border: '3px solid #E8366F',
-                borderTopColor: 'transparent',
-                animation: 'spin 0.8s linear infinite',
-              }} />
-            )}
-          </button>
-        </div>
+      {/* 하단 셔터 버튼 */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
+        paddingBottom: 36,
+        display: 'flex', justifyContent: 'center',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%)',
+      }}>
+        <button
+          onClick={handleCapture}
+          disabled={capturing || !!error}
+          style={{
+            width: 68, height: 68, borderRadius: '50%',
+            background: capturing ? 'rgba(255,255,255,0.35)' : '#fff',
+            border: '4px solid rgba(255,255,255,0.45)',
+            cursor: capturing ? 'default' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+            transition: 'transform 0.1s, background 0.15s',
+            transform: capturing ? 'scale(0.92)' : 'scale(1)',
+          }}
+        >
+          {capturing && (
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%',
+              border: '3px solid #D88CA6',
+              borderTopColor: 'transparent',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+          )}
+        </button>
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>

@@ -1,16 +1,14 @@
 import { useState, useMemo } from 'react'
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
 import { useAuth } from '../context/AuthContext'
 import { useClimbs } from '../hooks/useClimbs'
 import { useGyms } from '../hooks/useGyms'
 import PageShell from '../components/layout/PageShell'
 
-
 function getWeekKey(dateStr) {
   const d = new Date(dateStr + 'T00:00:00')
-  // 월요일 기준 주 시작
   const day = d.getDay() || 7
   d.setDate(d.getDate() - day + 1)
   return d.toISOString().slice(0, 10)
@@ -26,8 +24,9 @@ function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   return (
     <div className="card py-2 px-3 text-sm" style={{ minWidth: 100 }}>
-      <p className="text-gray-400 text-xs mb-1">{label}</p>
-      <p className="font-bold" style={{ color: '#E8366F' }}>Lv.{payload[0].value}</p>
+      <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
+      <p className="font-semibold" style={{ color: '#D88CA6' }}>Lv.{payload[0].value}</p>
+      <p className="text-xs mt-0.5" style={{ color: '#888780' }}>{payload[0].payload.count}개 완등</p>
     </div>
   )
 }
@@ -53,20 +52,20 @@ export default function ProgressPage() {
     return list
   }, [climbs, filterGymId, months])
 
-  // 날짜별 최고 레벨
   const chartData = useMemo(() => {
     const dateMap = {}
     filtered.forEach((c) => {
       const lv = c.gradeLevel ?? 0
       if (!lv) return
-      if (!dateMap[c.date] || lv > dateMap[c.date]) dateMap[c.date] = lv
+      if (!dateMap[c.date]) dateMap[c.date] = { maxV: 0, count: 0 }
+      if (lv > dateMap[c.date].maxV) dateMap[c.date].maxV = lv
+      dateMap[c.date].count += (c.count ?? 1)
     })
     return Object.entries(dateMap)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, maxV]) => ({ week: date.slice(5), maxV }))
+      .map(([date, { maxV, count }]) => ({ week: date.slice(5), maxV, count }))
   }, [filtered])
 
-  // 요약 통계
   const totalCount = filtered.reduce((sum, c) => sum + (c.count ?? 1), 0)
   const bestNum = filtered.reduce((best, c) => {
     const lv = c.gradeLevel ?? 0
@@ -85,11 +84,11 @@ export default function ProgressPage() {
           <button
             key={opt.label}
             onClick={() => setPeriodIdx(i)}
-            className="px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors"
+            className="px-4 py-1.5 rounded-full text-sm font-medium border transition-colors"
             style={{
-              backgroundColor: periodIdx === i ? '#E8366F' : '#fff',
-              color: periodIdx === i ? '#fff' : '#666',
-              borderColor: periodIdx === i ? '#E8366F' : '#F0E0E5',
+              backgroundColor: periodIdx === i ? '#D88CA6' : '#fff',
+              color: periodIdx === i ? '#fff' : '#888780',
+              borderColor: periodIdx === i ? '#D88CA6' : '#EDD0DC',
             }}
           >
             {opt.label}
@@ -104,9 +103,9 @@ export default function ProgressPage() {
             onClick={() => setFilterGymId('all')}
             className="px-3 py-1 rounded-full text-xs font-medium border transition-colors"
             style={{
-              backgroundColor: filterGymId === 'all' ? '#1A1A1A' : '#fff',
-              color: filterGymId === 'all' ? '#fff' : '#666',
-              borderColor: filterGymId === 'all' ? '#1A1A1A' : '#F0E0E5',
+              backgroundColor: filterGymId === 'all' ? '#444441' : '#fff',
+              color: filterGymId === 'all' ? '#fff' : '#888780',
+              borderColor: filterGymId === 'all' ? '#444441' : '#EDD0DC',
             }}
           >
             전체
@@ -117,9 +116,9 @@ export default function ProgressPage() {
               onClick={() => setFilterGymId(filterGymId === g.id ? 'all' : g.id)}
               className="px-3 py-1 rounded-full text-xs font-medium border transition-colors"
               style={{
-                backgroundColor: filterGymId === g.id ? '#1A1A1A' : '#fff',
-                color: filterGymId === g.id ? '#fff' : '#666',
-                borderColor: filterGymId === g.id ? '#1A1A1A' : '#F0E0E5',
+                backgroundColor: filterGymId === g.id ? '#444441' : '#fff',
+                color: filterGymId === g.id ? '#fff' : '#888780',
+                borderColor: filterGymId === g.id ? '#444441' : '#EDD0DC',
               }}
             >
               {g.name}
@@ -136,9 +135,9 @@ export default function ProgressPage() {
           { label: '총 완등', value: totalCount, unit: '개' },
         ].map(({ label, value, unit }) => (
           <div key={label} className="card text-center py-4 px-2">
-            <p className="text-xs text-gray-400 mb-1">{label}</p>
-            <p className="font-bold text-xl" style={{ color: '#E8366F' }}>
-              {value}<span className="text-sm font-medium text-gray-400 ml-0.5">{unit}</span>
+            <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
+            <p className="font-bold text-xl" style={{ color: '#B5607E' }}>
+              {value}<span className="text-sm font-medium ml-0.5" style={{ color: '#888780' }}>{unit}</span>
             </p>
           </div>
         ))}
@@ -146,37 +145,74 @@ export default function ProgressPage() {
 
       {/* 차트 */}
       {loading ? (
-        <p className="text-gray-400 text-sm text-center py-12">불러오는 중…</p>
+        <p className="text-sm text-center py-12" style={{ color: '#888780' }}>불러오는 중…</p>
       ) : chartData.length < 2 ? (
         <div className="card text-center py-12">
           <div className="text-4xl mb-3">📈</div>
-          <p className="text-gray-500 font-medium">데이터가 부족해요</p>
-          <p className="text-gray-400 text-sm mt-1">이틀 이상 기록하면 그래프가 나타나요</p>
+          <p className="font-medium" style={{ color: '#444441' }}>데이터가 부족해요</p>
+          <p className="text-sm mt-1" style={{ color: '#888780' }}>이틀 이상 기록하면 그래프가 나타나요</p>
         </div>
       ) : (
-        <div className="card">
-          <p className="text-sm font-semibold text-gray-600 mb-4">날짜별 최고 레벨</p>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEB" />
-              <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#999' }} />
-              <YAxis
-                domain={[1, 11]}
-                tickFormatter={(n) => `Lv.${n}`}
-                tick={{ fontSize: 11, fill: '#999' }}
-                ticks={[1, 3, 5, 7, 9, 11]}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="maxV"
-                stroke="#E8366F"
-                strokeWidth={2.5}
-                dot={{ fill: '#E8366F', r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="space-y-3">
+          {/* 날짜별 최고 레벨 */}
+          <div className="card">
+            <p className="text-sm font-medium mb-4" style={{ color: '#888780' }}>날짜별 최고 레벨</p>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#EDD0DC" />
+                <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#888780' }} />
+                <YAxis
+                  domain={[1, 11]}
+                  tickFormatter={(n) => `Lv.${n}`}
+                  tick={{ fontSize: 11, fill: '#888780' }}
+                  ticks={[1, 3, 5, 7, 9, 11]}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="maxV"
+                  stroke="#D88CA6"
+                  strokeWidth={2.5}
+                  dot={{ fill: '#D88CA6', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* 날짜별 완등 개수 */}
+          <div className="card">
+            <p className="text-sm font-medium mb-4" style={{ color: '#888780' }}>날짜별 완등 개수</p>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#EDD0DC" vertical={false} />
+                <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#888780' }} />
+                <YAxis
+                  allowDecimals={false}
+                  tick={{ fontSize: 11, fill: '#888780' }}
+                />
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null
+                    return (
+                      <div className="card py-2 px-3 text-sm" style={{ minWidth: 90 }}>
+                        <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
+                        <p className="font-semibold" style={{ color: '#D88CA6' }}>{payload[0].value}개</p>
+                      </div>
+                    )
+                  }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                  {chartData.map((entry, i) => (
+                    <Cell
+                      key={i}
+                      fill={i === chartData.length - 1 ? '#D88CA6' : '#F4C0D1'}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
     </PageShell>

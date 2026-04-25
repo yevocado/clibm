@@ -37,6 +37,23 @@ const CLIMBOUNCE_COLORS = [
   { label: '검정색', hex: '#1f2937', level: 9 },
 ]
 
+export const GYM_BRANDS = ['더클라임', '서울숲', '클라임바운스']
+
+export const BRAND_COLORS = {
+  '더클라임': THE_CLIMB_COLORS,
+  '서울숲': SEOUL_SUP_COLORS,
+  '클라임바운스': CLIMBOUNCE_COLORS,
+}
+
+export function getGymBrand(gymName) {
+  if (!gymName) return gymName
+  const name = gymName.trim()
+  if (name.startsWith('서울숲')) return '서울숲'
+  if (name.startsWith('더클라임')) return '더클라임'
+  if (name.startsWith('클라임바운스')) return '클라임바운스'
+  return gymName
+}
+
 export const GYM_PRESETS = [
   { name: '더클라임',      defaultGradeSystem: 'color', colors: THE_CLIMB_COLORS },
   { name: '더클라임 연남', defaultGradeSystem: 'color', colors: THE_CLIMB_COLORS },

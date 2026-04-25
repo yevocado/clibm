@@ -4,10 +4,11 @@ function today() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function ClimbForm({ gyms, onSubmit, onCancel }) {
+export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
+  const initialGymId = defaultGymId ?? gyms[0]?.id ?? ''
   const [date, setDate] = useState(today())
-  const [gymId, setGymId] = useState(gyms[0]?.id ?? '')
-  const [selectedColors, setSelectedColors] = useState({}) // { [level]: count }
+  const [gymId, setGymId] = useState(initialGymId)
+  const [selectedColors, setSelectedColors] = useState({})
   const [memo, setMemo] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -96,7 +97,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
       <div>
         <label className="input-label">암장</label>
         {gyms.length === 0 ? (
-          <p className="text-sm text-gray-400">등록된 암장이 없어요. 먼저 암장을 추가해 주세요.</p>
+          <p className="text-sm" style={{ color: '#888780' }}>등록된 암장이 없어요. 먼저 암장을 추가해 주세요.</p>
         ) : (
           <select
             value={gymId}
@@ -113,10 +114,10 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
       {/* 색상 (난이도) */}
       <div>
         <label className="input-label">
-          색상 <span style={{ color: '#BBBBBB', fontWeight: 400 }}>(여러 개 선택 가능)</span>
+          색상 <span style={{ color: '#D3D1C7', fontWeight: 400 }}>(여러 개 선택 가능)</span>
         </label>
         {colors.length === 0 ? (
-          <p className="text-sm text-gray-400">이 암장에 색상이 등록되지 않았어요.</p>
+          <p className="text-sm" style={{ color: '#888780' }}>이 암장에 색상이 등록되지 않았어요.</p>
         ) : (
           <div className="flex flex-wrap gap-4 mt-1">
             {colors.map((c) => {
@@ -132,14 +133,14 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
                       width: 40,
                       height: 40,
                       backgroundColor: c.hex,
-                      border: isSelected ? '3px solid #E8366F' : '2px solid #F0E0E5',
+                      border: isSelected ? '3px solid #D88CA6' : '1px solid #EDD0DC',
                       transform: isSelected ? 'scale(1.1)' : 'scale(1)',
                       boxShadow: isSelected
-                        ? '0 0 0 2px #fff, 0 0 0 4px #E8366F'
+                        ? '0 0 0 2px #fff, 0 0 0 4px #D88CA6'
                         : 'none',
                     }}
                   />
-                  <span style={{ fontSize: 10, color: isSelected ? '#E8366F' : '#999' }}>
+                  <span style={{ fontSize: 10, color: isSelected ? '#D88CA6' : '#888780' }}>
                     {c.label}
                   </span>
                   {isSelected && (
@@ -149,13 +150,13 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
                         onClick={() => adjustCount(c.level, -1)}
                         style={{
                           width: 20, height: 20, borderRadius: '50%',
-                          background: '#F0E0E5', color: '#E8366F',
-                          fontSize: 14, fontWeight: 800,
+                          background: '#FBF0F4', color: '#D88CA6',
+                          fontSize: 14, fontWeight: 700,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          border: 'none', cursor: 'pointer',
+                          border: '1px solid #EDD0DC', cursor: 'pointer',
                         }}
                       >−</button>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#E8366F', minWidth: 16, textAlign: 'center' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#D88CA6', minWidth: 16, textAlign: 'center' }}>
                         {sel}
                       </span>
                       <button
@@ -163,8 +164,8 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
                         onClick={() => adjustCount(c.level, 1)}
                         style={{
                           width: 20, height: 20, borderRadius: '50%',
-                          background: '#E8366F', color: '#fff',
-                          fontSize: 14, fontWeight: 800,
+                          background: '#D88CA6', color: '#fff',
+                          fontSize: 14, fontWeight: 700,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           border: 'none', cursor: 'pointer',
                         }}
@@ -181,7 +182,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
       {/* 메모 */}
       <div>
         <label className="input-label">
-          메모 <span style={{ color: '#BBBBBB', fontWeight: 400 }}>(선택)</span>
+          메모 <span style={{ color: '#D3D1C7', fontWeight: 400 }}>(선택)</span>
         </label>
         <textarea
           value={memo}
@@ -193,7 +194,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel }) {
         />
       </div>
 
-      {error && <p className="text-sm" style={{ color: '#E8366F' }}>{error}</p>}
+      {error && <p className="text-sm" style={{ color: '#D4537E' }}>{error}</p>}
 
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onCancel} className="btn-secondary flex-1">

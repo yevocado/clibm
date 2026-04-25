@@ -4,7 +4,7 @@ export default function PageShell({ title, children, action }) {
       {(title || action) && (
         <div className="flex items-center justify-between mb-6">
           {title && (
-            <h1 className="font-bold" style={{ fontSize: 24, color: '#1A1A1A' }}>
+            <h1 className="font-semibold" style={{ fontSize: 24, color: '#444441', lineHeight: 1.35 }}>
               {title}
             </h1>
           )}

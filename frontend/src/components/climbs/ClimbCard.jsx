@@ -23,37 +23,38 @@ export default function ClimbCard({ climb, onDelete }) {
           width: 44,
           height: 44,
           backgroundColor: gradeColor,
-          border: '2px solid #F0E0E5',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+          border: '1px solid #EDD0DC',
         }}
       />
 
       {/* 내용 */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-semibold text-gray-800 text-sm">{grade}</span>
+          <span className="font-semibold text-sm" style={{ color: '#444441' }}>{grade}</span>
           {climb.count > 1 && (
             <span
-              className="text-xs font-bold px-1.5 py-0.5 rounded-full"
-              style={{ background: '#F0E0E5', color: '#E8366F' }}
+              className="text-xs font-medium px-1.5 py-0.5 rounded-full"
+              style={{ background: '#FBF0F4', color: '#B5607E' }}
             >
               ×{climb.count}
             </span>
           )}
         </div>
-        <p className="text-xs text-gray-400 mb-1">
+        <p className="text-xs" style={{ color: '#888780' }}>
           {gymName} · {formattedDate}
         </p>
         {memo && (
-          <p className="text-sm text-gray-500 mt-1 leading-snug">{memo}</p>
+          <p className="text-sm mt-1 leading-snug" style={{ color: '#888780' }}>{memo}</p>
         )}
       </div>
 
       {/* 삭제 */}
       <button
         onClick={handleDelete}
-        className="btn-ghost shrink-0 p-1"
-        style={{ color: '#BBBBBB' }}
+        className="shrink-0 p-1 transition-colors"
+        style={{ color: '#D3D1C7' }}
+        onMouseEnter={e => e.currentTarget.style.color = '#888780'}
+        onMouseLeave={e => e.currentTarget.style.color = '#D3D1C7'}
       >
         <Trash2 size={16} />
       </button>

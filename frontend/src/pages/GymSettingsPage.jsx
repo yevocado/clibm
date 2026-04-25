@@ -8,7 +8,7 @@ import PageShell from '../components/layout/PageShell'
 export default function GymSettingsPage() {
   const { user } = useAuth()
   const { gyms, loading, addGym, updateGym, deleteGym } = useGyms(user?.uid)
-  const [mode, setMode] = useState(null) // null | 'add' | { edit: gym }
+  const [mode, setMode] = useState(null)
 
   const handleAdd = async (data) => {
     await addGym(data)
@@ -34,7 +34,6 @@ export default function GymSettingsPage() {
     }
   }
 
-  // 폼 화면
   if (mode === 'add') {
     return (
       <PageShell title="새 암장 추가">
@@ -58,19 +57,14 @@ export default function GymSettingsPage() {
     <PageShell
       title="암장 관리"
       action={
-        <button
-          onClick={() => setMode('add')}
-          className="btn-primary text-sm px-4 py-2"
-        >
+        <button onClick={() => setMode('add')} className="btn-primary text-sm" style={{ height: 36, padding: '0 16px' }}>
           + 추가
         </button>
       }
     >
       {/* 프리셋 */}
       <div className="mb-6">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-          프리셋으로 빠르게 추가
-        </p>
+        <p className="input-label mb-3">프리셋으로 빠르게 추가</p>
         <div className="flex flex-wrap gap-2">
           {GYM_PRESETS.map((preset) => {
             const added = gyms.some((g) => g.name === preset.name)
@@ -80,9 +74,9 @@ export default function GymSettingsPage() {
                 onClick={() => handlePreset(preset)}
                 className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
                 style={{
-                  backgroundColor: added ? '#E8366F' : '#fff',
-                  color: added ? '#fff' : '#E8366F',
-                  borderColor: added ? '#E8366F' : '#F9839E',
+                  backgroundColor: added ? '#D88CA6' : '#FBF0F4',
+                  color: added ? '#fff' : '#B5607E',
+                  borderColor: added ? '#D88CA6' : '#EDD0DC',
                 }}
               >
                 {added ? '✓ ' : ''}{preset.name}
@@ -94,29 +88,35 @@ export default function GymSettingsPage() {
 
       {/* 암장 목록 */}
       {loading ? (
-        <p className="text-gray-400 text-sm text-center py-8">불러오는 중…</p>
+        <p className="text-sm text-center py-8" style={{ color: '#888780' }}>불러오는 중…</p>
       ) : gyms.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">🏟️</div>
-          <p className="text-gray-500 font-medium">등록된 암장이 없어요</p>
-          <p className="text-gray-400 text-sm mt-1">프리셋이나 직접 추가해 보세요</p>
+          <p className="font-medium" style={{ color: '#444441' }}>등록된 암장이 없어요</p>
+          <p className="text-sm mt-1" style={{ color: '#888780' }}>프리셋이나 직접 추가해 보세요</p>
         </div>
       ) : (
         <div className="space-y-3">
           {gyms.map((gym) => (
             <div key={gym.id} className="card">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-bold text-gray-900">{gym.name}</span>
-                <div className="flex gap-2">
+                <span className="font-semibold" style={{ color: '#444441' }}>{gym.name}</span>
+                <div className="flex gap-3">
                   <button
                     onClick={() => setMode({ edit: gym })}
-                    className="text-xs text-primary-500 hover:text-primary-700 font-medium"
+                    className="text-xs font-medium transition-colors"
+                    style={{ color: '#D88CA6' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#D4537E'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#D88CA6'}
                   >
                     편집
                   </button>
                   <button
                     onClick={() => handleDelete(gym.id)}
-                    className="text-xs text-gray-400 hover:text-red-400 font-medium"
+                    className="text-xs font-medium transition-colors"
+                    style={{ color: '#D3D1C7' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#888780'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#D3D1C7'}
                   >
                     삭제
                   </button>
@@ -128,11 +128,11 @@ export default function GymSettingsPage() {
                 {(gym.colors ?? []).map((c) => (
                   <div key={c.level} className="flex flex-col items-center gap-0.5">
                     <div
-                      className="w-7 h-7 rounded-full border-2 border-white shadow"
-                      style={{ backgroundColor: c.hex }}
+                      className="w-7 h-7 rounded-full"
+                      style={{ backgroundColor: c.hex, border: '1px solid #EDD0DC' }}
                       title={`${c.label} (lv.${c.level})`}
                     />
-                    <span className="text-gray-400" style={{ fontSize: '9px' }}>
+                    <span style={{ fontSize: '9px', color: '#888780' }}>
                       {c.label}
                     </span>
                   </div>

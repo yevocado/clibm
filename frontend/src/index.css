@@ -3,102 +3,120 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-text-primary: #444441;
+    --color-text-secondary: #888780;
+    --color-text-tertiary: #D3D1C7;
+    --color-border-tertiary: #EDD0DC;
+    --color-background-primary: #FFFFFF;
+    --color-background-secondary: #F5F3F0;
+  }
+
   html {
     -webkit-tap-highlight-color: transparent;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   }
   body {
-    background-color: #F2F2F4;
-    color: #0F0F0F;
+    background-color: #F5F3F0;
+    color: #444441;
     min-height: 100svh;
+    font-size: 15px;
+    line-height: 1.7;
   }
 }
 
 @layer components {
   .card {
-    background: #FFFFFF;
-    border-radius: 18px;
+    background: var(--color-background-primary);
+    border: 0.5px solid #EDD0DC;
+    border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
   }
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2;
-    background-color: #E8366F;
+    background-color: #D88CA6;
     color: #fff;
-    font-weight: 700;
-    font-size: 15px;
-    height: 50px;
-    border-radius: 14px;
-    padding: 0 22px;
-    letter-spacing: -0.2px;
+    font-weight: 500;
+    font-size: 14px;
+    height: 44px;
+    border-radius: 8px;
+    padding: 0 20px;
     transition: background-color 0.15s, transform 0.1s;
   }
-  .btn-primary:hover  { background-color: #C4234F; }
+  .btn-primary:hover { background-color: #D4537E; }
   .btn-primary:active { transform: scale(0.97); }
-  .btn-primary:disabled { opacity: 0.35; pointer-events: none; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(216,140,166,0.3); outline: none; }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2;
-    border: 1.5px solid #E2E2E2;
-    color: #1A1A1A;
-    font-weight: 600;
-    font-size: 15px;
-    height: 50px;
-    border-radius: 14px;
-    padding: 0 22px;
-    background: #fff;
-    transition: background-color 0.15s, border-color 0.15s;
+    border: 1.5px solid #D88CA6;
+    color: #D88CA6;
+    font-weight: 500;
+    font-size: 14px;
+    height: 44px;
+    border-radius: 8px;
+    padding: 0 20px;
+    background: transparent;
+    transition: border-color 0.15s, color 0.15s;
   }
-  .btn-secondary:hover { background-color: #F8F8F8; border-color: #C8C8C8; }
+  .btn-secondary:hover { border-color: #D4537E; color: #D4537E; }
 
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-1.5;
-    color: #888888;
+    background: #FBF0F4;
+    color: #B5607E;
     font-weight: 500;
-    transition: color 0.15s;
+    border-radius: 8px;
+    padding: 10px 20px;
+    transition: background-color 0.15s;
   }
-  .btn-ghost:hover { color: #1A1A1A; }
+  .btn-ghost:hover { background: #F4C0D1; }
 
   .input-field {
     width: 100%;
-    height: 48px;
-    border: 1.5px solid #E8E8E8;
-    border-radius: 12px;
-    padding: 0 16px;
-    font-size: 15px;
-    color: #0F0F0F;
-    background: #fff;
-    transition: border-color 0.15s;
+    height: 44px;
+    border: 1px solid #EDD0DC;
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 14px;
+    font-family: 'Pretendard', sans-serif;
+    color: #444441;
+    background: var(--color-background-primary);
+    transition: border-color 0.15s, box-shadow 0.15s;
     outline: none;
   }
-  .input-field:focus { border-color: #0F0F0F; }
-  .input-field::placeholder { color: #C0C0C0; }
+  .input-field:focus {
+    border-color: #D88CA6;
+    box-shadow: 0 0 0 3px rgba(216,140,166,0.15);
+  }
+  .input-field::placeholder { color: #D3D1C7; }
 
   .input-label {
     display: block;
-    font-size: 12px;
-    font-weight: 700;
-    color: #999999;
-    letter-spacing: 0.4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #888780;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 8px;
   }
 
   .progress-bar-track {
-    background: #EBEBEB;
+    background: #F4C0D1;
     height: 6px;
     border-radius: 99px;
     overflow: hidden;
   }
   .progress-bar-fill {
-    background: #E8366F;
+    background: #D88CA6;
     height: 100%;
     border-radius: 99px;
     transition: width 0.5s ease;
   }
 
   .rounded-btn {
-    border-radius: 10px;
+    border-radius: 8px;
   }
 }
