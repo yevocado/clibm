@@ -272,7 +272,8 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
                       width: 28, height: 28, borderRadius: '50%',
                       backgroundColor: c.hex,
                       border: '1px solid rgba(0,0,0,0.08)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      textAlign: 'center',
+                      lineHeight: '28px',
                       fontSize: 11, fontWeight: 700,
                       color: isLight(c.hex) ? '#444441' : '#fff',
                     }}>{c.count}</div>
