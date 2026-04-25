@@ -25,11 +25,20 @@ function buildGymGroups(todayClimbs) {
   }))
 }
 
-function fallbackDownload(blob, date) {
+async function saveImage(blob, date) {
+  const file = new File([blob], `유리의벽_${date}.png`, { type: 'image/png' })
+  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: '유리의 벽' })
+      return
+    } catch (e) {
+      if (e.name === 'AbortError') return
+    }
+  }
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `유리의벽_${date}.png`
+  a.download = file.name
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -60,8 +69,8 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
         useCORS: true,
         logging: false,
       })
-      canvas.toBlob((blob) => {
-        fallbackDownload(blob, today)
+      canvas.toBlob(async (blob) => {
+        await saveImage(blob, today)
         setSaving(false)
       }, 'image/png')
     } catch (e) {

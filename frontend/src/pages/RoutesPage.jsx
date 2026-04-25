@@ -176,6 +176,8 @@ function DayCard({ date, climbs, onDelete, onUpdate }) {
                           backgroundColor: entry.gradeColor,
                           border: '1px solid #EDD0DC',
                           fontSize: 15,
+                          lineHeight: 1,
+                          padding: 0,
                           color: isLight(entry.gradeColor) ? '#444441' : '#fff',
                           cursor: 'pointer',
                         }}

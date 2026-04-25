@@ -9,11 +9,20 @@ function isLight(hex) {
   return r * 0.299 + g * 0.587 + b * 0.114 > 180
 }
 
-function fallbackDownload(blob, date) {
+async function saveImage(blob, date) {
+  const file = new File([blob], `유리의벽_${date}.png`, { type: 'image/png' })
+  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: '유리의 벽' })
+      return
+    } catch (e) {
+      if (e.name === 'AbortError') return
+    }
+  }
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `유리의벽_${date}.png`
+  a.download = file.name
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -78,6 +87,9 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
       canvas.height = H * DPR
       const ctx = canvas.getContext('2d')
 
+      ctx.fillStyle = '#000'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
       const vw = video.videoWidth || W
       const vh = video.videoHeight || H
       const scale = Math.max(W / vw, H / vh)
@@ -87,10 +99,11 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
       const oy = (H - sh) / 2
 
       if (facingMode === 'user') {
+        ctx.save()
         ctx.translate(canvas.width, 0)
         ctx.scale(-1, 1)
         ctx.drawImage(video, ox * DPR, oy * DPR, sw * DPR, sh * DPR)
-        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.restore()
       } else {
         ctx.drawImage(video, ox * DPR, oy * DPR, sw * DPR, sh * DPR)
       }
@@ -101,7 +114,7 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
       await document.fonts.ready
       const cardCanvas = await html2canvas(cardEl, {
         scale: DPR * 2,
-        backgroundColor: '#fff',
+        backgroundColor: null,
         useCORS: true,
         logging: false,
       })
@@ -112,8 +125,8 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
         cardRect.width * DPR, cardRect.height * DPR,
       )
 
-      canvas.toBlob((blob) => {
-        fallbackDownload(blob, todayStr)
+      canvas.toBlob(async (blob) => {
+        await saveImage(blob, todayStr)
         setCapturing(false)
       }, 'image/png')
     } catch (e) {
@@ -202,13 +215,11 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
         }}
       >
         <div style={{
-          background: 'rgba(255,255,255,0.75)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          background: 'rgba(255,255,255,0.93)',
           border: '1px solid rgba(255,255,255,0.9)',
           borderRadius: 16,
           padding: '12px 14px 10px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.25)',
         }}>
           {/* 헤더 */}
           <div style={{
