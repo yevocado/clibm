@@ -4,6 +4,7 @@ import {
   onSnapshot,
   addDoc,
   deleteDoc,
+  updateDoc,
   doc,
   serverTimestamp,
   query,
@@ -39,5 +40,9 @@ export function useClimbs(userId) {
     await deleteDoc(doc(db, 'users', userId, 'climbs', climbId))
   }
 
-  return { climbs, loading, addClimb, deleteClimb }
+  const updateClimb = async (climbId, updates) => {
+    await updateDoc(doc(db, 'users', userId, 'climbs', climbId), updates)
+  }
+
+  return { climbs, loading, addClimb, deleteClimb, updateClimb }
 }
