@@ -1,7 +1,6 @@
+import { useState } from 'react'
 import { signInWithRedirect, signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
-
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const FEATURES = [
   {
@@ -36,15 +35,29 @@ const GoogleIcon = () => (
 )
 
 export default function LoginPage() {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
   const handleGoogleLogin = async () => {
+    setError(null)
+    setLoading(true)
     try {
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider)
-      } else {
-        await signInWithPopup(auth, googleProvider)
-      }
+      await signInWithPopup(auth, googleProvider)
     } catch (err) {
-      console.error('로그인 실패:', err)
+      // 팝업 차단된 경우 리다이렉트로 폴백
+      if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+        try {
+          await signInWithRedirect(auth, googleProvider)
+        } catch (e) {
+          setError('로그인에 실패했어요. 다시 시도해주세요.')
+          console.error(e)
+        }
+      } else {
+        setError(`로그인에 실패했어요. (${err.code})`)
+        console.error(err)
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -119,9 +132,11 @@ export default function LoginPage() {
 
           <button
             onClick={handleGoogleLogin}
+            disabled={loading}
             className="active:scale-95"
             style={{
               width: '100%',
+              opacity: loading ? 0.7 : 1,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               height: 48, borderRadius: 10,
               border: '1px solid #EDD0DC',
@@ -141,8 +156,12 @@ export default function LoginPage() {
             }}
           >
             <GoogleIcon />
-            Google로 계속하기
+            {loading ? '로그인 중…' : 'Google로 계속하기'}
           </button>
+
+          {error && (
+            <p style={{ fontSize: 12, color: '#ef4444', marginTop: 12 }}>{error}</p>
+          )}
 
           <p style={{ fontSize: 11, color: '#D3D1C7', marginTop: 16 }}>
             로그인하면 기록이 클라우드에 안전하게 저장됩니다
