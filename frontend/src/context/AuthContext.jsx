@@ -22,21 +22,24 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // 리다이렉트 로그인 후 결과 처리
-    getRedirectResult(auth).catch((err) => {
-      console.error('redirect result error:', err)
-    })
+    let unsubscribe
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        upsertUser(firebaseUser).catch((err) => console.error('upsertUser error:', err))
-        setUser(firebaseUser)
-      } else {
-        setUser(null)
-      }
-      setLoading(false)
-    })
-    return unsubscribe
+    // 리다이렉트 결과를 먼저 처리한 뒤 인증 상태 구독
+    getRedirectResult(auth)
+      .catch((err) => console.error('redirect result error:', err))
+      .finally(() => {
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          if (firebaseUser) {
+            upsertUser(firebaseUser).catch((err) => console.error('upsertUser error:', err))
+            setUser(firebaseUser)
+          } else {
+            setUser(null)
+          }
+          setLoading(false)
+        })
+      })
+
+    return () => unsubscribe?.()
   }, [])
 
   return (
