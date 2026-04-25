@@ -49,7 +49,11 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
     setError(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: mode },
+        video: {
+          facingMode: mode,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
         audio: false,
       })
       streamRef.current = stream
@@ -82,38 +86,55 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
       const H = window.innerHeight
       const DPR = window.devicePixelRatio || 1
 
+      const vw = video.videoWidth || W
+      const vh = video.videoHeight || H
+
+      // 화면 비율에 맞게 video 해상도 기준으로 캔버스 크기 결정 (최대 해상도 활용)
+      const aspect = W / H
+      let cw, ch
+      if (vw / vh > aspect) {
+        ch = vh
+        cw = Math.round(vh * aspect)
+      } else {
+        cw = vw
+        ch = Math.round(vw / aspect)
+      }
+
       const canvas = document.createElement('canvas')
-      canvas.width = W * DPR
-      canvas.height = H * DPR
+      canvas.width = cw
+      canvas.height = ch
       const ctx = canvas.getContext('2d')
 
       ctx.fillStyle = '#000'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      const vw = video.videoWidth || W
-      const vh = video.videoHeight || H
-      const scale = Math.max(W / vw, H / vh)
-      const sw = vw * scale
-      const sh = vh * scale
-      const ox = (W - sw) / 2
-      const oy = (H - sh) / 2
+      // 비디오 → 캔버스 매핑 (cover 방식, 중앙 크롭)
+      const srcScale = Math.max(cw / vw, ch / vh)
+      const srcW = cw / srcScale
+      const srcH = ch / srcScale
+      const srcX = (vw - srcW) / 2
+      const srcY = (vh - srcH) / 2
 
       if (facingMode === 'user') {
         ctx.save()
         ctx.translate(canvas.width, 0)
         ctx.scale(-1, 1)
-        ctx.drawImage(video, ox * DPR, oy * DPR, sw * DPR, sh * DPR)
+        ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, cw, ch)
         ctx.restore()
       } else {
-        ctx.drawImage(video, ox * DPR, oy * DPR, sw * DPR, sh * DPR)
+        ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, cw, ch)
       }
+
+      // 카드 위치: 화면 좌표 → 캔버스 좌표로 변환
+      const scaleX = cw / W
+      const scaleY = ch / H
 
       const cardEl = overlayCardRef.current
       const cardRect = cardEl.getBoundingClientRect()
       const { default: html2canvas } = await import('html2canvas')
       await document.fonts.ready
       const cardCanvas = await html2canvas(cardEl, {
-        scale: DPR * 2,
+        scale: Math.max(scaleX, scaleY) * 2,
         backgroundColor: null,
         useCORS: true,
         logging: false,
@@ -121,8 +142,8 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
 
       ctx.drawImage(
         cardCanvas,
-        cardRect.left * DPR, cardRect.top * DPR,
-        cardRect.width * DPR, cardRect.height * DPR,
+        cardRect.left * scaleX, cardRect.top * scaleY,
+        cardRect.width * scaleX, cardRect.height * scaleY,
       )
 
       canvas.toBlob(async (blob) => {
