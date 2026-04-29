@@ -9,7 +9,7 @@ import PageShell from '../components/layout/PageShell'
 export default function GymSettingsPage() {
   const { user } = useAuth()
   const { gyms, loading: gymsLoading, addGym, updateGym, deleteGym } = useGyms(user?.uid)
-  const { brands, loading: brandsLoading, addBrand } = useGymBrands()
+  const { brands, loading: brandsLoading, addBrand, deleteBrand, removeBranchFromBrand } = useGymBrands()
   const [mode, setMode] = useState(null) // null | 'addBrand' | 'addCustomGym' | { edit: gym }
   const [expandedBrand, setExpandedBrand] = useState(null) // brandId with open 지점 추가 input
   const [newBranchName, setNewBranchName] = useState('')
@@ -20,6 +20,20 @@ export default function GymSettingsPage() {
       await deleteGym(existing.id)
     } else {
       await addGym({ name: gymName, brandId: brand.id, brandName: brand.name })
+    }
+  }
+
+  const handleDeleteBrand = async (brand) => {
+    if (window.confirm(`'${brand.name}' 브랜드를 삭제할까요?`)) {
+      await deleteBrand(brand.id)
+    }
+  }
+
+  const handleRemovePresetBranch = async (name, brand) => {
+    if (window.confirm(`'${name}'을 지점 목록에서 삭제할까요?`)) {
+      const existing = gyms.find((g) => g.name === name)
+      if (existing) await deleteGym(existing.id)
+      await removeBranchFromBrand(brand.id, name)
     }
   }
 
@@ -99,6 +113,11 @@ export default function GymSettingsPage() {
                       />
                     ))}
                   </div>
+                  <button
+                    onClick={() => handleDeleteBrand(brand)}
+                    className="ml-auto text-xs font-medium"
+                    style={{ color: '#D3D1C7' }}
+                  >삭제</button>
                 </div>
 
                 {/* 지점 토글 칩 */}
@@ -106,18 +125,26 @@ export default function GymSettingsPage() {
                   {presetNames.map((name) => {
                     const added = userGymNames.has(name)
                     return (
-                      <button
+                      <div
                         key={name}
-                        onClick={() => handleToggleBranch(name, brand)}
-                        className="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors"
+                        className="flex items-center rounded-full border text-xs font-medium overflow-hidden transition-colors"
                         style={{
                           backgroundColor: added ? '#D88CA6' : '#FBF0F4',
                           color: added ? '#fff' : '#B5607E',
                           borderColor: added ? '#D88CA6' : '#EDD0DC',
                         }}
                       >
-                        {added ? '✓ ' : ''}{name}
-                      </button>
+                        <button
+                          onClick={() => handleToggleBranch(name, brand)}
+                          className="pl-3 pr-2 py-1.5"
+                        >
+                          {added ? '✓ ' : ''}{name}
+                        </button>
+                        <button
+                          onClick={() => handleRemovePresetBranch(name, brand)}
+                          className="pr-2.5 py-1.5 opacity-50 hover:opacity-100"
+                        >×</button>
+                      </div>
                     )
                   })}
 

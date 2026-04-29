@@ -24,7 +24,7 @@ export default function Navbar() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white" style={{ borderBottom: '1px solid #EDD0DC' }}>
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/dashboard" className="font-bold text-base" style={{ color: '#444441', letterSpacing: '-0.3px' }}>
-            유리의 벽
+            벽로그
           </Link>
 
           {/* 데스크탑 탭 */}

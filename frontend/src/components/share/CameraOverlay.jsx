@@ -10,10 +10,10 @@ function isLight(hex) {
 }
 
 async function saveImage(blob, date) {
-  const file = new File([blob], `유리의벽_${date}.png`, { type: 'image/png' })
+  const file = new File([blob], `벽로그_${date}.png`, { type: 'image/png' })
   if (navigator.share && navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: '유리의 벽' })
+      await navigator.share({ files: [file], title: '벽로그' })
       return
     } catch (e) {
       if (e.name === 'AbortError') return

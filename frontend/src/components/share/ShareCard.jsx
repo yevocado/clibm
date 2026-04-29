@@ -113,7 +113,7 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups, todayVisits =
 
       {/* 푸터 */}
       <div style={{ background: '#F5F3F0', padding: '8px 24px', borderTop: '0.5px solid #EDD0DC' }}>
-        <p style={{ fontSize: 10, color: '#D3D1C7', textAlign: 'center', fontWeight: 500 }}>유리의 벽으로 기록하세요 🏔️</p>
+        <p style={{ fontSize: 10, color: '#D3D1C7', textAlign: 'center', fontWeight: 500 }}>벽로그로 기록하세요 🏔️</p>
       </div>
     </div>
   )

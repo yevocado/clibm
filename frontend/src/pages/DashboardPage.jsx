@@ -42,10 +42,12 @@ export default function DashboardPage() {
   }, {})
   const climbMonthKeys = Object.keys(climbsByMonth).sort((a, b) => b.localeCompare(a))
 
+  const thisMonth = new Date().toISOString().slice(0, 7)
+
   const [expandedClimbMonths, setExpandedClimbMonths] = useState(new Set())
   useEffect(() => {
     if (climbMonthKeys.length > 0) {
-      setExpandedClimbMonths((prev) => prev.size === 0 ? new Set(climbMonthKeys) : prev)
+      setExpandedClimbMonths((prev) => prev.size === 0 ? new Set([thisMonth]) : prev)
     }
   }, [climbMonthKeys[0]]) // eslint-disable-line react-hooks/exhaustive-deps
   const toggleClimbMonth = (month) => setExpandedClimbMonths((prev) => {
@@ -70,7 +72,7 @@ export default function DashboardPage() {
   const [expandedVisitMonths, setExpandedVisitMonths] = useState(new Set())
   useEffect(() => {
     if (visitMonthKeys.length > 0) {
-      setExpandedVisitMonths((prev) => prev.size === 0 ? new Set(visitMonthKeys) : prev)
+      setExpandedVisitMonths((prev) => prev.size === 0 ? new Set([thisMonth]) : prev)
     }
   }, [visitMonthKeys[0]]) // eslint-disable-line react-hooks/exhaustive-deps
 

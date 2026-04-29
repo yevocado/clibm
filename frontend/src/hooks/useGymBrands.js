@@ -113,18 +113,6 @@ export function useGymBrands() {
         return
       }
 
-      // 새 시드 브랜드 자동 추가
-      const existingNames = new Set(snap.docs.map((d) => d.data().name))
-      const missing = SEED_BRANDS.filter((b) => !existingNames.has(b.name))
-      if (missing.length > 0) {
-        const batch = writeBatch(db)
-        missing.forEach((brand) => {
-          batch.set(doc(collection(db, 'gymBrands')), brand)
-        })
-        await batch.commit()
-        return
-      }
-
       // gymNames 마이그레이션 (구→신 이름 변경)
       let migrated = false
       for (const d of snap.docs) {

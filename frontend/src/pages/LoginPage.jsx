@@ -170,7 +170,7 @@ export default function LoginPage() {
 
         {/* 앱 이름 */}
         <p style={{ textAlign: 'center', fontSize: 12, color: '#D3D1C7', marginTop: 32 }}>
-          🧗 유리의 벽
+          🧗 벽로그
         </p>
 
       </div>
