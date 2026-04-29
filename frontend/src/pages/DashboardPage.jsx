@@ -6,7 +6,7 @@ import { useClimbs } from '../hooks/useClimbs'
 import { useGoals } from '../hooks/useGoals'
 import PageShell from '../components/layout/PageShell'
 import DailyShareButton from '../components/share/DailyShareButton'
-import { getGymBrand } from '../constants/gymPresets'
+import { useGymBrands, getBrandName } from '../hooks/useGymBrands'
 
 function isLight(hex) {
   if (!hex || hex.length < 7) return true
@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const { climbs } = useClimbs(user?.uid)
   const { goals } = useGoals(user?.uid)
+  const { brands } = useGymBrands()
   const navigate = useNavigate()
 
   const today = new Date().toISOString().slice(0, 10)
@@ -79,11 +80,11 @@ export default function DashboardPage() {
     return next
   })
 
-  // ── 최고 레벨: 암장별 집계 ──
-  const bestByGymId = climbs.reduce((acc, c) => {
-    const key = c.gymId
+  // ── 최고 레벨: 브랜드별 집계 ──
+  const bestByBrand = climbs.reduce((acc, c) => {
+    const key = getBrandName(c.gymName, brands)
     if (!acc[key] || (c.gradeLevel ?? 0) > acc[key].level) {
-      acc[key] = { gymName: c.gymName, level: c.gradeLevel, hex: c.gradeColor, label: c.grade }
+      acc[key] = { brandName: key, level: c.gradeLevel, hex: c.gradeColor, label: c.grade }
     }
     return acc
   }, {})
@@ -94,7 +95,7 @@ export default function DashboardPage() {
   const getGoalProgress = (goal) => {
     const currentCount = goal.targetColor && goal.gymBrand
       ? climbs.reduce((sum, c) => {
-          if (getGymBrand(c.gymName) !== goal.gymBrand) return sum
+          if (getBrandName(c.gymName, brands) !== goal.gymBrand) return sum
           if (c.grade !== goal.targetColor.label) return sum
           return sum + (c.count ?? 1)
         }, 0)
@@ -110,7 +111,7 @@ export default function DashboardPage() {
 
   const firstName = user?.displayName?.split(' ')[0] ?? '유리'
 
-  const bestEntries = Object.entries(bestByGymId)
+  const bestEntries = Object.entries(bestByBrand)
 
   return (
     <PageShell>
@@ -137,8 +138,8 @@ export default function DashboardPage() {
               fontSize: 18, flexShrink: 0,
             }}>🎯</div>
             <div>
-              <p className="font-semibold text-sm" style={{ color: '#444441' }}>목표 레벨을 설정해보세요</p>
-              <p className="text-xs mt-0.5" style={{ color: '#888780' }}>도전할 V등급을 정하고 성장을 추적해요</p>
+              <p className="font-semibold text-sm" style={{ color: '#444441' }}>목표를 설정해보세요</p>
+              <p className="text-xs mt-0.5" style={{ color: '#888780' }}>도전할 색상을 정하고 성장을 추적해요</p>
             </div>
             <span className="ml-auto text-xs font-medium" style={{ color: '#D88CA6', flexShrink: 0 }}>설정 →</span>
           </div>
@@ -334,20 +335,12 @@ export default function DashboardPage() {
               {bestEntries.map(([gymId, best]) => (
                 <div key={gymId} className="flex items-center gap-2.5">
                   <div
-                    className="rounded-full shrink-0 flex items-center justify-center font-bold"
-                    style={{
-                      width: 32, height: 32,
-                      backgroundColor: best.hex,
-                      border: '1px solid #EDD0DC',
-                      fontSize: 11,
-                      color: isLight(best.hex) ? '#444441' : '#fff',
-                    }}
-                  >
-                    {best.level}
-                  </div>
+                    className="rounded-full shrink-0"
+                    style={{ width: 32, height: 32, backgroundColor: best.hex, border: '1px solid #EDD0DC' }}
+                  />
                   <div>
-                    <p className="text-xs" style={{ color: '#888780' }}>{best.gymName}</p>
-                    <p className="text-xs font-medium" style={{ color: '#B5607E' }}>{best.label} · Lv.{best.level}</p>
+                    <p className="text-xs" style={{ color: '#888780' }}>{best.brandName}</p>
+                    <p className="text-xs font-medium" style={{ color: '#B5607E' }}>{best.label}</p>
                   </div>
                 </div>
               ))}

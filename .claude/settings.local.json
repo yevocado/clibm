@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(nohup npm:*)",
+      "Read(//tmp/**)",
+      "Bash(git *)",
+      "Bash(rm /c/Users/120054/projects/climbing/frontend/src/pages/VisitsPage.jsx /c/Users/120054/projects/climbing/frontend/src/hooks/useVisits.js /c/Users/120054/projects/climbing/frontend/src/components/visits/VisitForm.jsx)",
+      "Bash(rmdir /c/Users/120054/projects/climbing/frontend/src/components/visits)",
+      "Bash(node --experimental-vm-modules seed-gym-brands.mjs)",
+      "Bash(node seed-gym-brands.mjs)",
+      "Bash(firebase --version)",
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)"
+    ]
+  }
+}

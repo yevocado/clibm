@@ -1,0 +1,64 @@
+{
+  "version": "3.0.10",
+  "installDate": "2026-04-22T07:29:12.575Z",
+  "lastUpdateDate": null,
+  "installMode": "project",
+  "installedComponents": {
+    "config": {
+      "version": "3.0.10",
+      "enabled": true
+    },
+    "hooks": {
+      "version": "3.0.10",
+      "enabled": true
+    },
+    "commands": {
+      "version": "3.0.10",
+      "enabled": true
+    },
+    "agents": {
+      "version": "3.0.10",
+      "enabled": true
+    },
+    "skills": {
+      "version": "3.0.10",
+      "enabled": true
+    }
+  },
+  "userCustomizations": [],
+  "dependencies": {
+    "node": {
+      "version": "24.13.1",
+      "required": true,
+      "available": true,
+      "location": "C:\\Program Files\\nodejs\\node.exe"
+    },
+    "uv": {
+      "version": null,
+      "required": false,
+      "available": false,
+      "location": null
+    },
+    "python": {
+      "version": "3.14.3",
+      "required": false,
+      "available": true,
+      "location": "C:\\Users\\120054\\AppData\\Local\\Python\\bin\\python.exe"
+    },
+    "git": {
+      "version": "2.53.0",
+      "required": false,
+      "available": true,
+      "location": "C:\\Program Files\\Git\\cmd\\git.exe"
+    }
+  },
+  "transactionHistory": [
+    {
+      "transactionId": "6a617ed7-b1fa-4e55-9700-4f6de527b09a",
+      "operation": "install",
+      "version": "3.0.10",
+      "timestamp": "2026-04-22T07:29:12.575Z",
+      "status": "completed"
+    }
+  ]
+}

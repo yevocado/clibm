@@ -1,145 +1,230 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useGyms } from '../hooks/useGyms'
-import { GYM_PRESETS } from '../constants/gymPresets'
+import { useGymBrands } from '../hooks/useGymBrands'
 import GymForm from '../components/gyms/GymForm'
+import BrandForm from '../components/gyms/BrandForm'
 import PageShell from '../components/layout/PageShell'
 
 export default function GymSettingsPage() {
   const { user } = useAuth()
-  const { gyms, loading, addGym, updateGym, deleteGym } = useGyms(user?.uid)
-  const [mode, setMode] = useState(null)
+  const { gyms, loading: gymsLoading, addGym, updateGym, deleteGym } = useGyms(user?.uid)
+  const { brands, loading: brandsLoading, addBrand } = useGymBrands()
+  const [mode, setMode] = useState(null) // null | 'addBrand' | 'addCustomGym' | { edit: gym }
+  const [expandedBrand, setExpandedBrand] = useState(null) // brandId with open 지점 추가 input
+  const [newBranchName, setNewBranchName] = useState('')
 
-  const handleAdd = async (data) => {
-    await addGym(data)
-    setMode(null)
-  }
-
-  const handleUpdate = async (data) => {
-    await updateGym(mode.edit.id, data)
-    setMode(null)
-  }
-
-  const handleDelete = async (gymId) => {
-    if (!confirm('암장을 삭제하면 관련 기록의 색상 정보가 표시되지 않을 수 있습니다. 삭제할까요?')) return
-    await deleteGym(gymId)
-  }
-
-  const handlePreset = async (preset) => {
-    const existing = gyms.find((g) => g.name === preset.name)
+  const handleToggleBranch = async (gymName, brand) => {
+    const existing = gyms.find((g) => g.name === gymName)
     if (existing) {
       await deleteGym(existing.id)
     } else {
-      await addGym(preset)
+      await addGym({ name: gymName, brandId: brand.id, brandName: brand.name })
     }
   }
 
-  if (mode === 'add') {
-    return (
-      <PageShell title="새 암장 추가">
-        <GymForm onSubmit={handleAdd} onCancel={() => setMode(null)} />
-      </PageShell>
-    )
+  const handleAddBranch = async (brand) => {
+    const trimmed = newBranchName.trim()
+    if (!trimmed) return
+    await addGym({ name: trimmed, brandId: brand.id, brandName: brand.name })
+    setNewBranchName('')
+    setExpandedBrand(null)
   }
-  if (mode?.edit) {
+
+  if (mode === 'addBrand') {
     return (
-      <PageShell title="암장 편집">
-        <GymForm
-          initial={mode.edit}
-          onSubmit={handleUpdate}
+      <PageShell title="브랜드 추가">
+        <BrandForm
+          onSubmit={async (data) => { await addBrand(data); setMode(null) }}
           onCancel={() => setMode(null)}
         />
       </PageShell>
     )
   }
 
-  return (
-    <PageShell
-      title="암장 관리"
-      action={
-        <button onClick={() => setMode('add')} className="btn-primary text-sm" style={{ height: 36, padding: '0 16px' }}>
-          + 추가
-        </button>
-      }
-    >
-      {/* 프리셋 */}
-      <div className="mb-6">
-        <p className="input-label mb-3">프리셋으로 빠르게 추가</p>
-        <div className="flex flex-wrap gap-2">
-          {GYM_PRESETS.map((preset) => {
-            const added = gyms.some((g) => g.name === preset.name)
-            return (
-              <button
-                key={preset.name}
-                onClick={() => handlePreset(preset)}
-                className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
-                style={{
-                  backgroundColor: added ? '#D88CA6' : '#FBF0F4',
-                  color: added ? '#fff' : '#B5607E',
-                  borderColor: added ? '#D88CA6' : '#EDD0DC',
-                }}
-              >
-                {added ? '✓ ' : ''}{preset.name}
-              </button>
-            )
-          })}
-        </div>
-      </div>
+  if (mode === 'addCustomGym') {
+    return (
+      <PageShell title="커스텀 암장 추가">
+        <GymForm
+          onSubmit={async (data) => { await addGym(data); setMode(null) }}
+          onCancel={() => setMode(null)}
+        />
+      </PageShell>
+    )
+  }
 
-      {/* 암장 목록 */}
-      {loading ? (
-        <p className="text-sm text-center py-8" style={{ color: '#888780' }}>불러오는 중…</p>
-      ) : gyms.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4">🏟️</div>
-          <p className="font-medium" style={{ color: '#444441' }}>등록된 암장이 없어요</p>
-          <p className="text-sm mt-1" style={{ color: '#888780' }}>프리셋이나 직접 추가해 보세요</p>
-        </div>
+  if (mode?.edit) {
+    return (
+      <PageShell title="암장 편집">
+        <GymForm
+          initial={mode.edit}
+          onSubmit={async (data) => { await updateGym(mode.edit.id, data); setMode(null) }}
+          onCancel={() => setMode(null)}
+        />
+      </PageShell>
+    )
+  }
+
+  const userGymNames = new Set(gyms.map((g) => g.name))
+  const customGyms = gyms.filter((g) => !g.brandId)
+
+  return (
+    <PageShell title="암장 관리">
+      {(gymsLoading || brandsLoading) ? (
+        <p className="text-sm text-center py-12" style={{ color: '#888780' }}>불러오는 중…</p>
       ) : (
         <div className="space-y-3">
-          {gyms.map((gym) => (
-            <div key={gym.id} className="card">
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-semibold" style={{ color: '#444441' }}>{gym.name}</span>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setMode({ edit: gym })}
-                    className="text-xs font-medium transition-colors"
-                    style={{ color: '#D88CA6' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#D4537E'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#D88CA6'}
-                  >
-                    편집
-                  </button>
-                  <button
-                    onClick={() => handleDelete(gym.id)}
-                    className="text-xs font-medium transition-colors"
-                    style={{ color: '#D3D1C7' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#888780'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#D3D1C7'}
-                  >
-                    삭제
-                  </button>
-                </div>
-              </div>
+          {/* 브랜드 카드 */}
+          {brands.map((brand) => {
+            const presetNames = brand.gymNames ?? []
+            const userBranchesOfBrand = gyms.filter((g) => g.brandId === brand.id)
+            const customBranches = userBranchesOfBrand.filter((g) => !presetNames.includes(g.name))
+            const isExpanded = expandedBrand === brand.id
 
-              {/* 색상 팔레트 미리보기 */}
-              <div className="flex flex-wrap gap-1.5">
-                {(gym.colors ?? []).map((c) => (
-                  <div key={c.level} className="flex flex-col items-center gap-0.5">
-                    <div
-                      className="w-7 h-7 rounded-full"
-                      style={{ backgroundColor: c.hex, border: '1px solid #EDD0DC' }}
-                      title={`${c.label} (lv.${c.level})`}
+            return (
+              <div key={brand.id} className="card">
+                {/* 브랜드 헤더 */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="font-semibold text-sm" style={{ color: '#444441' }}>{brand.name}</span>
+                  <div className="flex gap-1 flex-wrap">
+                    {brand.colors.map((c, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          width: 12, height: 12, borderRadius: '50%',
+                          backgroundColor: c.hex,
+                          border: (c.hex === '#FFFFFF' || c.hex === '#E5E7EB') ? '0.5px solid #EDD0DC' : 'none',
+                          flexShrink: 0,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* 지점 토글 칩 */}
+                <div className="flex flex-wrap gap-2">
+                  {presetNames.map((name) => {
+                    const added = userGymNames.has(name)
+                    return (
+                      <button
+                        key={name}
+                        onClick={() => handleToggleBranch(name, brand)}
+                        className="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors"
+                        style={{
+                          backgroundColor: added ? '#D88CA6' : '#FBF0F4',
+                          color: added ? '#fff' : '#B5607E',
+                          borderColor: added ? '#D88CA6' : '#EDD0DC',
+                        }}
+                      >
+                        {added ? '✓ ' : ''}{name}
+                      </button>
+                    )
+                  })}
+
+                  {/* 프리셋에 없는 커스텀 지점 */}
+                  {customBranches.map((g) => (
+                    <button
+                      key={g.id}
+                      onClick={() => { if (window.confirm(`${g.name}을 삭제할까요?`)) deleteGym(g.id) }}
+                      className="px-3 py-1.5 rounded-full text-xs font-medium border"
+                      style={{ backgroundColor: '#D88CA6', color: '#fff', borderColor: '#D88CA6' }}
+                    >
+                      ✓ {g.name} ×
+                    </button>
+                  ))}
+                </div>
+
+                {/* 지점 추가 인라인 입력 */}
+                {isExpanded ? (
+                  <div className="flex gap-2 mt-3">
+                    <input
+                      type="text"
+                      value={newBranchName}
+                      onChange={(e) => setNewBranchName(e.target.value)}
+                      placeholder={`${brand.name} 지점명`}
+                      className="input-field flex-1"
+                      style={{ height: 36, fontSize: 13 }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); handleAddBranch(brand) }
+                        if (e.key === 'Escape') { setExpandedBrand(null); setNewBranchName('') }
+                      }}
+                      autoFocus
                     />
-                    <span style={{ fontSize: '9px', color: '#888780' }}>
-                      {c.label}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleAddBranch(brand)}
+                      className="btn-primary text-xs"
+                      style={{ height: 36, padding: '0 12px' }}
+                    >추가</button>
+                    <button
+                      type="button"
+                      onClick={() => { setExpandedBrand(null); setNewBranchName('') }}
+                      className="btn-secondary text-xs"
+                      style={{ height: 36, padding: '0 12px' }}
+                    >취소</button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setExpandedBrand(brand.id); setNewBranchName('') }}
+                    className="mt-3 text-xs font-medium"
+                    style={{ color: '#D88CA6' }}
+                  >
+                    + 지점 추가
+                  </button>
+                )}
+              </div>
+            )
+          })}
+
+          {/* 커스텀 암장 (브랜드 없는 것) */}
+          {customGyms.length > 0 && (
+            <div className="card">
+              <p className="text-sm font-semibold mb-3" style={{ color: '#444441' }}>커스텀 암장</p>
+              <div className="space-y-3">
+                {customGyms.map((gym) => (
+                  <div key={gym.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1">
+                        {gym.colors?.map((c, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              width: 12, height: 12, borderRadius: '50%',
+                              backgroundColor: c.hex,
+                              border: (c.hex === '#FFFFFF' || c.hex === '#E5E7EB') ? '0.5px solid #EDD0DC' : 'none',
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm" style={{ color: '#444441' }}>{gym.name}</span>
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setMode({ edit: gym })}
+                        className="text-xs font-medium"
+                        style={{ color: '#D88CA6' }}
+                      >편집</button>
+                      <button
+                        onClick={() => { if (window.confirm(`${gym.name}을 삭제할까요?`)) deleteGym(gym.id) }}
+                        className="text-xs font-medium"
+                        style={{ color: '#D3D1C7' }}
+                      >삭제</button>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          ))}
+          )}
+
+          {/* 하단 액션 버튼 */}
+          <div className="flex gap-3 pt-1">
+            <button onClick={() => setMode('addBrand')} className="btn-secondary flex-1 text-sm">
+              + 브랜드 추가
+            </button>
+            <button onClick={() => setMode('addCustomGym')} className="btn-secondary flex-1 text-sm">
+              + 커스텀 암장
+            </button>
+          </div>
         </div>
       )}
     </PageShell>

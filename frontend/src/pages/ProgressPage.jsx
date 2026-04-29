@@ -1,18 +1,12 @@
 import { useState, useMemo } from 'react'
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
 import { useAuth } from '../context/AuthContext'
 import { useClimbs } from '../hooks/useClimbs'
 import { useGyms } from '../hooks/useGyms'
+import { useGymBrands, getBrandName } from '../hooks/useGymBrands'
 import PageShell from '../components/layout/PageShell'
-
-function getWeekKey(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00')
-  const day = d.getDay() || 7
-  d.setDate(d.getDate() - day + 1)
-  return d.toISOString().slice(0, 10)
-}
 
 const PERIOD_OPTIONS = [
   { label: '1개월', months: 1 },
@@ -20,21 +14,11 @@ const PERIOD_OPTIONS = [
   { label: '전체', months: null },
 ]
 
-function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="card py-2 px-3 text-sm" style={{ minWidth: 100 }}>
-      <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
-      <p className="font-semibold" style={{ color: '#D88CA6' }}>Lv.{payload[0].value}</p>
-      <p className="text-xs mt-0.5" style={{ color: '#888780' }}>{payload[0].payload.count}개 완등</p>
-    </div>
-  )
-}
-
 export default function ProgressPage() {
   const { user } = useAuth()
   const { climbs, loading } = useClimbs(user?.uid)
   const { gyms } = useGyms(user?.uid)
+  const { brands } = useGymBrands()
   const [periodIdx, setPeriodIdx] = useState(1)
   const [filterGymId, setFilterGymId] = useState('all')
 
@@ -52,25 +36,31 @@ export default function ProgressPage() {
     return list
   }, [climbs, filterGymId, months])
 
+  // 날짜별 완등 개수 (바 차트용)
   const chartData = useMemo(() => {
     const dateMap = {}
     filtered.forEach((c) => {
-      const lv = c.gradeLevel ?? 0
-      if (!lv) return
-      if (!dateMap[c.date]) dateMap[c.date] = { maxV: 0, count: 0 }
-      if (lv > dateMap[c.date].maxV) dateMap[c.date].maxV = lv
-      dateMap[c.date].count += (c.count ?? 1)
+      if (!dateMap[c.date]) dateMap[c.date] = 0
+      dateMap[c.date] += (c.count ?? 1)
     })
     return Object.entries(dateMap)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, { maxV, count }]) => ({ week: date.slice(5), maxV, count }))
+      .map(([date, count]) => ({ week: date.slice(5), count }))
   }, [filtered])
 
+  // 브랜드별 최고 색상
+  const bestByBrand = useMemo(() => {
+    const acc = {}
+    filtered.forEach((c) => {
+      const key = getBrandName(c.gymName, brands)
+      if (!acc[key] || (c.gradeLevel ?? 0) > acc[key].level) {
+        acc[key] = { brandName: key, level: c.gradeLevel, hex: c.gradeColor, label: c.grade }
+      }
+    })
+    return Object.values(acc).filter((b) => b.level > 0)
+  }, [filtered, brands])
+
   const totalCount = filtered.reduce((sum, c) => sum + (c.count ?? 1), 0)
-  const bestNum = filtered.reduce((best, c) => {
-    const lv = c.gradeLevel ?? 0
-    return lv > best ? lv : best
-  }, 0)
   const thisMonth = new Date().toISOString().slice(0, 7)
   const thisMonthCount = climbs
     .filter((c) => c.date.startsWith(thisMonth))
@@ -128,10 +118,9 @@ export default function ProgressPage() {
       )}
 
       {/* 요약 카드 */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-2 gap-3 mb-5">
         {[
           { label: '이번달 완등', value: thisMonthCount, unit: '개' },
-          { label: '최고 레벨', value: bestNum > 0 ? `Lv.${bestNum}` : '-', unit: '' },
           { label: '총 완등', value: totalCount, unit: '개' },
         ].map(({ label, value, unit }) => (
           <div key={label} className="card text-center py-4 px-2">
@@ -143,76 +132,73 @@ export default function ProgressPage() {
         ))}
       </div>
 
-      {/* 차트 */}
       {loading ? (
         <p className="text-sm text-center py-12" style={{ color: '#888780' }}>불러오는 중…</p>
-      ) : chartData.length < 2 ? (
-        <div className="card text-center py-12">
-          <div className="text-4xl mb-3">📈</div>
-          <p className="font-medium" style={{ color: '#444441' }}>데이터가 부족해요</p>
-          <p className="text-sm mt-1" style={{ color: '#888780' }}>이틀 이상 기록하면 그래프가 나타나요</p>
-        </div>
       ) : (
         <div className="space-y-3">
-          {/* 날짜별 최고 레벨 */}
-          <div className="card">
-            <p className="text-sm font-medium mb-4" style={{ color: '#888780' }}>날짜별 최고 레벨</p>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#EDD0DC" />
-                <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#888780' }} />
-                <YAxis
-                  domain={[1, 11]}
-                  tickFormatter={(n) => `Lv.${n}`}
-                  tick={{ fontSize: 11, fill: '#888780' }}
-                  ticks={[1, 3, 5, 7, 9, 11]}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="maxV"
-                  stroke="#D88CA6"
-                  strokeWidth={2.5}
-                  dot={{ fill: '#D88CA6', r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          {/* 브랜드별 최고 색상 */}
+          {bestByBrand.length > 0 && (
+            <div className="card">
+              <p className="text-sm font-medium mb-4" style={{ color: '#888780' }}>브랜드별 최고 색상</p>
+              <div className="flex flex-wrap gap-4">
+                {bestByBrand.map((b) => (
+                  <div key={b.brandName} className="flex items-center gap-2.5">
+                    <div
+                      className="rounded-full shrink-0"
+                      style={{
+                        width: 36, height: 36,
+                        backgroundColor: b.hex,
+                        border: b.hex === '#FFFFFF' || b.hex === '#E5E7EB'
+                          ? '1.5px solid #EDD0DC'
+                          : '1.5px solid transparent',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.10)',
+                      }}
+                    />
+                    <div>
+                      <p className="text-xs" style={{ color: '#888780' }}>{b.brandName}</p>
+                      <p className="text-sm font-semibold" style={{ color: '#B5607E' }}>{b.label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 날짜별 완등 개수 */}
-          <div className="card">
-            <p className="text-sm font-medium mb-4" style={{ color: '#888780' }}>날짜별 완등 개수</p>
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#EDD0DC" vertical={false} />
-                <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#888780' }} />
-                <YAxis
-                  allowDecimals={false}
-                  tick={{ fontSize: 11, fill: '#888780' }}
-                />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (!active || !payload?.length) return null
-                    return (
-                      <div className="card py-2 px-3 text-sm" style={{ minWidth: 90 }}>
-                        <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
-                        <p className="font-semibold" style={{ color: '#D88CA6' }}>{payload[0].value}개</p>
-                      </div>
-                    )
-                  }}
-                />
-                <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                  {chartData.map((entry, i) => (
-                    <Cell
-                      key={i}
-                      fill={i === chartData.length - 1 ? '#D88CA6' : '#F4C0D1'}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {chartData.length >= 2 ? (
+            <div className="card">
+              <p className="text-sm font-medium mb-4" style={{ color: '#888780' }}>날짜별 완등 개수</p>
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#EDD0DC" vertical={false} />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#888780' }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#888780' }} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null
+                      return (
+                        <div className="card py-2 px-3 text-sm" style={{ minWidth: 90 }}>
+                          <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
+                          <p className="font-semibold" style={{ color: '#D88CA6' }}>{payload[0].value}개</p>
+                        </div>
+                      )
+                    }}
+                  />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                    {chartData.map((_, i) => (
+                      <Cell key={i} fill={i === chartData.length - 1 ? '#D88CA6' : '#F4C0D1'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="card text-center py-12">
+              <div className="text-4xl mb-3">📈</div>
+              <p className="font-medium" style={{ color: '#444441' }}>데이터가 부족해요</p>
+              <p className="text-sm mt-1" style={{ color: '#888780' }}>이틀 이상 기록하면 그래프가 나타나요</p>
+            </div>
+          )}
         </div>
       )}
     </PageShell>

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useGymBrands, getBrandColors } from '../../hooks/useGymBrands'
 
 function today() {
   return new Date().toISOString().slice(0, 10)
 }
 
 export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
+  const { brands } = useGymBrands()
   const initialGymId = defaultGymId ?? gyms[0]?.id ?? ''
   const [date, setDate] = useState(today())
   const [gymId, setGymId] = useState(initialGymId)
@@ -18,33 +20,35 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
   }, [gyms, gymId])
 
   const selectedGym = gyms.find((g) => g.id === gymId)
-  const colors = selectedGym?.colors ?? []
+  const colors = selectedGym?.brandId
+    ? getBrandColors(selectedGym.brandId, brands)
+    : (selectedGym?.colors ?? [])
 
   const handleGymChange = (id) => {
     setGymId(id)
     setSelectedColors({})
   }
 
-  const toggleColor = (level) => {
+  const toggleColor = (idx) => {
     setSelectedColors((prev) => {
-      if (prev[level] !== undefined) {
+      if (prev[idx] !== undefined) {
         const next = { ...prev }
-        delete next[level]
+        delete next[idx]
         return next
       }
-      return { ...prev, [level]: 1 }
+      return { ...prev, [idx]: 1 }
     })
   }
 
-  const adjustCount = (level, delta) => {
+  const adjustCount = (idx, delta) => {
     setSelectedColors((prev) => {
-      const newCount = (prev[level] ?? 1) + delta
+      const newCount = (prev[idx] ?? 1) + delta
       if (newCount < 1) {
         const next = { ...prev }
-        delete next[level]
+        delete next[idx]
         return next
       }
-      return { ...prev, [level]: newCount }
+      return { ...prev, [idx]: newCount }
     })
   }
 
@@ -57,16 +61,16 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
     setSaving(true)
     setError(null)
     try {
-      const entries = Object.entries(selectedColors).map(([levelStr, count]) => {
-        const level = Number(levelStr)
-        const color = colors.find((c) => c.level === level)
+      const entries = Object.entries(selectedColors).map(([idxStr, count]) => {
+        const idx = Number(idxStr)
+        const color = colors[idx]
         return {
           date,
           gymId,
           gymName: selectedGym.name,
           grade: color.label,
           gradeColor: color.hex,
-          gradeLevel: level,
+          gradeLevel: idx + 1,
           count,
           memo: memo.trim(),
         }
@@ -120,14 +124,14 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
           <p className="text-sm" style={{ color: '#888780' }}>이 암장에 색상이 등록되지 않았어요.</p>
         ) : (
           <div className="flex flex-wrap gap-4 mt-1">
-            {colors.map((c) => {
-              const sel = selectedColors[c.level]
+            {colors.map((c, i) => {
+              const sel = selectedColors[i]
               const isSelected = sel !== undefined
               return (
-                <div key={c.level} className="flex flex-col items-center gap-1">
+                <div key={i} className="flex flex-col items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => toggleColor(c.level)}
+                    onClick={() => toggleColor(i)}
                     className="rounded-full transition-transform"
                     style={{
                       width: 40,
@@ -147,7 +151,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <button
                         type="button"
-                        onClick={() => adjustCount(c.level, -1)}
+                        onClick={() => adjustCount(i, -1)}
                         style={{
                           width: 20, height: 20, borderRadius: '50%',
                           background: '#FBF0F4', color: '#D88CA6',
@@ -161,7 +165,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
                       </span>
                       <button
                         type="button"
-                        onClick={() => adjustCount(c.level, 1)}
+                        onClick={() => adjustCount(i, 1)}
                         style={{
                           width: 20, height: 20, borderRadius: '50%',
                           background: '#D88CA6', color: '#fff',

@@ -4,16 +4,16 @@ import { useAuth } from '../context/AuthContext'
 import { useGoals } from '../hooks/useGoals'
 import { useClimbs } from '../hooks/useClimbs'
 import PageShell from '../components/layout/PageShell'
-import { GYM_BRANDS, BRAND_COLORS, getGymBrand } from '../constants/gymPresets'
+import { useGymBrands, getBrandName } from '../hooks/useGymBrands'
 
-function GoalForm({ onSubmit, onCancel }) {
+function GoalForm({ onSubmit, onCancel, brands }) {
   const [gymBrand, setGymBrand] = useState(null)
   const [targetColor, setTargetColor] = useState(null)
   const [targetCount, setTargetCount] = useState(10)
   const [deadline, setDeadline] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const colors = gymBrand ? (BRAND_COLORS[gymBrand] ?? []) : []
+  const colors = gymBrand ? (brands.find((b) => b.name === gymBrand)?.colors ?? []) : []
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -29,19 +29,19 @@ function GoalForm({ onSubmit, onCancel }) {
       <div>
         <label className="input-label">암장</label>
         <div className="flex flex-wrap gap-2 mt-1">
-          {GYM_BRANDS.map((brand) => (
+          {brands.map((b) => (
             <button
-              key={brand}
+              key={b.name}
               type="button"
-              onClick={() => { setGymBrand(brand); setTargetColor(null) }}
+              onClick={() => { setGymBrand(b.name); setTargetColor(null) }}
               className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
               style={{
-                backgroundColor: gymBrand === brand ? '#D88CA6' : '#fff',
-                color: gymBrand === brand ? '#fff' : '#888780',
-                borderColor: gymBrand === brand ? '#D88CA6' : '#EDD0DC',
+                backgroundColor: gymBrand === b.name ? '#D88CA6' : '#fff',
+                color: gymBrand === b.name ? '#fff' : '#888780',
+                borderColor: gymBrand === b.name ? '#D88CA6' : '#EDD0DC',
               }}
             >
-              {brand}
+              {b.name}
             </button>
           ))}
         </div>
@@ -213,12 +213,13 @@ export default function GoalPage() {
   const { user } = useAuth()
   const { goals, loading, addGoal, deleteGoal } = useGoals(user?.uid)
   const { climbs } = useClimbs(user?.uid)
+  const { brands } = useGymBrands()
   const [showForm, setShowForm] = useState(false)
 
   const getProgressCount = (goal) => {
     if (goal.targetColor && goal.gymBrand) {
       return climbs.reduce((sum, c) => {
-        if (getGymBrand(c.gymName) !== goal.gymBrand) return sum
+        if (getBrandName(c.gymName, brands) !== goal.gymBrand) return sum
         if (c.grade !== goal.targetColor.label) return sum
         return sum + (c.count ?? 1)
       }, 0)
@@ -235,7 +236,7 @@ export default function GoalPage() {
   if (showForm) {
     return (
       <PageShell title="목표 설정">
-        <GoalForm onSubmit={handleAdd} onCancel={() => setShowForm(false)} />
+        <GoalForm onSubmit={handleAdd} onCancel={() => setShowForm(false)} brands={brands} />
       </PageShell>
     )
   }

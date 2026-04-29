@@ -29,11 +29,9 @@ export function useGyms(userId) {
     return unsub
   }, [userId])
 
-  const addGym = async ({ name, defaultGradeSystem, colors }) => {
+  const addGym = async (data) => {
     await addDoc(collection(db, 'users', userId, 'gyms'), {
-      name,
-      defaultGradeSystem,
-      colors,
+      ...data,
       createdAt: serverTimestamp(),
     })
   }

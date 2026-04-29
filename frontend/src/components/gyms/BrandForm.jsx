@@ -1,28 +1,28 @@
 import { useState } from 'react'
 import ColorPaletteEditor from './ColorPaletteEditor'
 
-export default function GymForm({ initial, onSubmit, onCancel }) {
-  const [name, setName] = useState(initial?.name ?? '')
-  const [colors, setColors] = useState(initial?.colors ?? [])
+export default function BrandForm({ onSubmit, onCancel }) {
+  const [name, setName] = useState('')
+  const [colors, setColors] = useState([])
   const [saving, setSaving] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!name.trim()) return
+    if (!name.trim() || colors.length === 0) return
     setSaving(true)
-    await onSubmit({ name: name.trim(), colors })
+    await onSubmit({ name: name.trim(), colors, gymNames: [] })
     setSaving(false)
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="input-label">암장 이름</label>
+        <label className="input-label">브랜드 이름</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="예) 홍길동 클라이밍"
+          placeholder="예) 더볼더"
           className="input-field"
           required
         />
@@ -37,7 +37,11 @@ export default function GymForm({ initial, onSubmit, onCancel }) {
 
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onCancel} className="btn-secondary flex-1">취소</button>
-        <button type="submit" disabled={saving || !name.trim()} className="btn-primary flex-1">
+        <button
+          type="submit"
+          disabled={saving || !name.trim() || colors.length === 0}
+          className="btn-primary flex-1"
+        >
           {saving ? '저장 중…' : '저장'}
         </button>
       </div>
