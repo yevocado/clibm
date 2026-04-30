@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useGyms } from '../hooks/useGyms'
 import { useGymBrands } from '../hooks/useGymBrands'
+import { useTheme, THEMES } from '../context/ThemeContext'
 import GymForm from '../components/gyms/GymForm'
 import BrandForm from '../components/gyms/BrandForm'
 import PageShell from '../components/layout/PageShell'
@@ -10,6 +11,7 @@ export default function GymSettingsPage() {
   const { user } = useAuth()
   const { gyms, loading: gymsLoading, addGym, updateGym, deleteGym } = useGyms(user?.uid)
   const { brands, loading: brandsLoading, addBrand, deleteBrand, removeBranchFromBrand } = useGymBrands()
+  const { theme, setTheme } = useTheme()
   const [mode, setMode] = useState(null) // null | 'addBrand' | 'addCustomGym' | { edit: gym }
   const [expandedBrand, setExpandedBrand] = useState(null) // brandId with open 지점 추가 input
   const [newBranchName, setNewBranchName] = useState('')
@@ -88,6 +90,36 @@ export default function GymSettingsPage() {
         <p className="text-sm text-center py-12" style={{ color: '#888780' }}>불러오는 중…</p>
       ) : (
         <div className="space-y-3">
+          {/* 테마 */}
+          <div className="card">
+            <p className="text-sm font-semibold mb-4" style={{ color: '#444441' }}>테마</p>
+            <div className="flex gap-5">
+              {THEMES.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTheme(t.id)}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <div style={{
+                    width: 48, height: 48, borderRadius: 14,
+                    background: t.color,
+                    boxShadow: theme === t.id
+                      ? `0 0 0 2.5px #fff, 0 0 0 4.5px ${t.color}`
+                      : '0 0 0 2px #E5E5E3',
+                    transition: 'box-shadow 0.15s',
+                  }} />
+                  <span style={{
+                    fontSize: 11,
+                    color: theme === t.id ? t.color : '#888780',
+                    fontWeight: theme === t.id ? 600 : 400,
+                  }}>
+                    {t.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* 브랜드 카드 */}
           {brands.map((brand) => {
             const presetNames = brand.gymNames ?? []
@@ -129,9 +161,9 @@ export default function GymSettingsPage() {
                         key={name}
                         className="flex items-center rounded-full border text-xs font-medium overflow-hidden transition-colors"
                         style={{
-                          backgroundColor: added ? '#D88CA6' : '#FBF0F4',
-                          color: added ? '#fff' : '#B5607E',
-                          borderColor: added ? '#D88CA6' : '#EDD0DC',
+                          backgroundColor: added ? 'var(--color-primary)' : 'var(--color-primary-light)',
+                          color: added ? '#fff' : 'var(--color-primary-dark)',
+                          borderColor: added ? 'var(--color-primary)' : 'var(--color-primary-border)',
                         }}
                       >
                         <button
@@ -154,7 +186,7 @@ export default function GymSettingsPage() {
                       key={g.id}
                       onClick={() => { if (window.confirm(`${g.name}을 삭제할까요?`)) deleteGym(g.id) }}
                       className="px-3 py-1.5 rounded-full text-xs font-medium border"
-                      style={{ backgroundColor: '#D88CA6', color: '#fff', borderColor: '#D88CA6' }}
+                      style={{ backgroundColor: 'var(--color-primary)', color: '#fff', borderColor: 'var(--color-primary)' }}
                     >
                       ✓ {g.name} ×
                     </button>
@@ -194,7 +226,7 @@ export default function GymSettingsPage() {
                   <button
                     onClick={() => { setExpandedBrand(brand.id); setNewBranchName('') }}
                     className="mt-3 text-xs font-medium"
-                    style={{ color: '#D88CA6' }}
+                    style={{ color: 'var(--color-primary)' }}
                   >
                     + 지점 추가
                   </button>
@@ -229,7 +261,7 @@ export default function GymSettingsPage() {
                       <button
                         onClick={() => setMode({ edit: gym })}
                         className="text-xs font-medium"
-                        style={{ color: '#D88CA6' }}
+                        style={{ color: 'var(--color-primary)' }}
                       >편집</button>
                       <button
                         onClick={() => { if (window.confirm(`${gym.name}을 삭제할까요?`)) deleteGym(gym.id) }}

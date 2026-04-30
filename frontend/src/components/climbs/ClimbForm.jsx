@@ -137,14 +137,14 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
                       width: 40,
                       height: 40,
                       backgroundColor: c.hex,
-                      border: isSelected ? '3px solid #D88CA6' : '1px solid #EDD0DC',
+                      border: isSelected ? '3px solid var(--color-primary)' : '1px solid var(--color-primary-border)',
                       transform: isSelected ? 'scale(1.1)' : 'scale(1)',
                       boxShadow: isSelected
-                        ? '0 0 0 2px #fff, 0 0 0 4px #D88CA6'
+                        ? '0 0 0 2px #fff, 0 0 0 4px var(--color-primary)'
                         : 'none',
                     }}
                   />
-                  <span style={{ fontSize: 10, color: isSelected ? '#D88CA6' : '#888780' }}>
+                  <span style={{ fontSize: 10, color: isSelected ? 'var(--color-primary)' : '#888780' }}>
                     {c.label}
                   </span>
                   {isSelected && (
@@ -154,13 +154,13 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
                         onClick={() => adjustCount(i, -1)}
                         style={{
                           width: 20, height: 20, borderRadius: '50%',
-                          background: '#FBF0F4', color: '#D88CA6',
+                          background: 'var(--color-primary-light)', color: 'var(--color-primary)',
                           fontSize: 14, fontWeight: 700,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          border: '1px solid #EDD0DC', cursor: 'pointer',
+                          border: '1px solid var(--color-primary-border)', cursor: 'pointer',
                         }}
                       >−</button>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#D88CA6', minWidth: 16, textAlign: 'center' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-primary)', minWidth: 16, textAlign: 'center' }}>
                         {sel}
                       </span>
                       <button
@@ -168,7 +168,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
                         onClick={() => adjustCount(i, 1)}
                         style={{
                           width: 20, height: 20, borderRadius: '50%',
-                          background: '#D88CA6', color: '#fff',
+                          background: 'var(--color-primary)', color: '#fff',
                           fontSize: 14, fontWeight: 700,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           border: 'none', cursor: 'pointer',
@@ -198,7 +198,7 @@ export default function ClimbForm({ gyms, onSubmit, onCancel, defaultGymId }) {
         />
       </div>
 
-      {error && <p className="text-sm" style={{ color: '#D4537E' }}>{error}</p>}
+      {error && <p className="text-sm" style={{ color: 'var(--color-primary-hover)' }}>{error}</p>}
 
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onCancel} className="btn-secondary flex-1">

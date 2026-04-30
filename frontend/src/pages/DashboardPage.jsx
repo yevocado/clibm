@@ -135,7 +135,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: '#FBF0F4',
+              background: 'var(--color-primary-light)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 18, flexShrink: 0,
             }}>🎯</div>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
               <p className="font-semibold text-sm" style={{ color: '#444441' }}>목표를 설정해보세요</p>
               <p className="text-xs mt-0.5" style={{ color: '#888780' }}>도전할 색상을 정하고 성장을 추적해요</p>
             </div>
-            <span className="ml-auto text-xs font-medium" style={{ color: '#D88CA6', flexShrink: 0 }}>설정 →</span>
+            <span className="ml-auto text-xs font-medium" style={{ color: 'var(--color-primary)', flexShrink: 0 }}>설정 →</span>
           </div>
         </div>
       ) : (
@@ -153,7 +153,7 @@ export default function DashboardPage() {
             <button
               onClick={() => navigate('/goal')}
               className="text-xs font-medium"
-              style={{ color: '#D88CA6' }}
+              style={{ color: 'var(--color-primary)' }}
             >
               전체 보기 →
             </button>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
             {activeGoals.map((goal) => {
               const { currentCount, target, progress } = getGoalProgress(goal)
               const achieved = currentCount >= target
-              const hex = goal.targetColor?.hex ?? '#D88CA6'
+              const hex = goal.targetColor?.hex ?? 'var(--color-primary)'
               const daysLeft = goal.deadline
                 ? Math.ceil((new Date(goal.deadline + 'T00:00:00') - new Date()) / 86400000)
                 : null
@@ -174,16 +174,16 @@ export default function DashboardPage() {
                   style={{ cursor: 'pointer', padding: '12px 14px' }}
                 >
                   <div className="flex items-center gap-2.5 mb-2">
-                    <div className="rounded-full shrink-0" style={{ width: 24, height: 24, backgroundColor: hex, border: '1.5px solid #EDD0DC' }} />
+                    <div className="rounded-full shrink-0" style={{ width: 24, height: 24, backgroundColor: hex, border: '1.5px solid var(--color-primary-border)' }} />
                     <div className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
                       <span className="text-xs" style={{ color: '#888780' }}>{goal.gymBrand ?? '전체'}</span>
                       <span style={{ color: '#D3D1C7', fontSize: 10 }}>·</span>
                       <span className="font-semibold text-sm" style={{ color: achieved ? '#F59E0B' : '#444441' }}>
                         {goal.targetColor?.label ?? `Lv.${goal.targetLevel}`}
                       </span>
-                      <span className="text-sm font-semibold" style={{ color: '#D88CA6' }}>{target}개</span>
+                      <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>{target}개</span>
                     </div>
-                    <span className="font-bold text-sm shrink-0" style={{ color: '#B5607E' }}>{progress}%</span>
+                    <span className="font-bold text-sm shrink-0" style={{ color: 'var(--color-primary-dark)' }}>{progress}%</span>
                   </div>
                   <div className="progress-bar-track mb-2">
                     <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
@@ -225,9 +225,9 @@ export default function DashboardPage() {
                     onClick={() => toggleClimbMonth(month)}
                     className="flex items-center gap-3 w-full py-1"
                   >
-                    <span className="font-semibold text-sm" style={{ color: '#D88CA6' }}>{label}</span>
+                    <span className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>{label}</span>
                     <span className="text-xs font-medium" style={{ color: '#888780' }}>{monthTotal}개</span>
-                    <div className="flex-1 h-px" style={{ background: '#EDD0DC' }} />
+                    <div className="flex-1 h-px" style={{ background: 'var(--color-primary-border)' }} />
                     <ChevronDown
                       size={14}
                       style={{
@@ -251,13 +251,13 @@ export default function DashboardPage() {
                                 <div key={c.level} className="flex items-center gap-1">
                                   <div style={{
                                     width: 10, height: 10, borderRadius: '50%',
-                                    backgroundColor: c.hex, border: '0.5px solid #EDD0DC', flexShrink: 0,
+                                    backgroundColor: c.hex, border: '0.5px solid var(--color-primary-border)', flexShrink: 0,
                                   }} />
                                   <span style={{ fontSize: 11, color: '#888780' }}>{c.count}</span>
                                 </div>
                               ))}
                             </div>
-                            <span className="text-xs font-medium shrink-0" style={{ color: '#B5607E' }}>총 {total}개</span>
+                            <span className="text-xs font-medium shrink-0" style={{ color: 'var(--color-primary-dark)' }}>총 {total}개</span>
                           </div>
                         )
                       })}
@@ -292,9 +292,9 @@ export default function DashboardPage() {
                     onClick={() => toggleVisitMonth(month)}
                     className="flex items-center gap-3 w-full py-1"
                   >
-                    <span className="font-semibold text-sm" style={{ color: '#D88CA6' }}>{label}</span>
+                    <span className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>{label}</span>
                     <span className="text-xs font-medium" style={{ color: '#888780' }}>{monthTotal}회</span>
-                    <div className="flex-1 h-px" style={{ background: '#EDD0DC' }} />
+                    <div className="flex-1 h-px" style={{ background: 'var(--color-primary-border)' }} />
                     <ChevronDown
                       size={14}
                       style={{
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                         {gymList.map(([gymId, { gymName, count }]) => (
                           <div key={gymId} className="flex items-center gap-2">
                             <span className="text-sm font-medium" style={{ color: '#444441' }}>{gymName}</span>
-                            <span className="font-semibold" style={{ color: '#D88CA6' }}>{count}회</span>
+                            <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>{count}회</span>
                           </div>
                         ))}
                       </div>
@@ -342,7 +342,7 @@ export default function DashboardPage() {
                   />
                   <div>
                     <p className="text-xs" style={{ color: '#888780' }}>{best.brandName}</p>
-                    <p className="text-xs font-medium" style={{ color: '#B5607E' }}>{best.label}</p>
+                    <p className="text-xs font-medium" style={{ color: 'var(--color-primary-dark)' }}>{best.label}</p>
                   </div>
                 </div>
               ))}

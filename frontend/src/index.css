@@ -7,9 +7,59 @@
     --color-text-primary: #444441;
     --color-text-secondary: #888780;
     --color-text-tertiary: #D3D1C7;
-    --color-border-tertiary: #EDD0DC;
     --color-background-primary: #FFFFFF;
     --color-background-secondary: #F5F3F0;
+
+    /* 테마 색상 — 분홍 (기본) */
+    --color-primary: #D88CA6;
+    --color-primary-hover: #D4537E;
+    --color-primary-dark: #B5607E;
+    --color-primary-light: #FBF0F4;
+    --color-primary-border: #EDD0DC;
+    --color-primary-track: #F4C0D1;
+    --color-primary-light-alt: #FFF8FB;
+    --color-primary-shadow: rgba(216, 140, 166, 0.3);
+    --color-primary-focus: rgba(216, 140, 166, 0.15);
+    --color-primary-gradient-end: #993556;
+  }
+
+  html.theme-white {
+    --color-primary: #6B6B6B;
+    --color-primary-hover: #4A4A4A;
+    --color-primary-dark: #383838;
+    --color-primary-light: #F0F0F0;
+    --color-primary-border: #D6D3D1;
+    --color-primary-track: #C5C2C0;
+    --color-primary-light-alt: #F5F5F4;
+    --color-primary-shadow: rgba(107, 107, 107, 0.3);
+    --color-primary-focus: rgba(107, 107, 107, 0.15);
+    --color-primary-gradient-end: #222222;
+  }
+
+  html.theme-purple {
+    --color-primary: #9B7FD4;
+    --color-primary-hover: #7C5FB5;
+    --color-primary-dark: #5F4A8C;
+    --color-primary-light: #F4F0FB;
+    --color-primary-border: #D5C8F0;
+    --color-primary-track: #C5B2E8;
+    --color-primary-light-alt: #F8F5FF;
+    --color-primary-shadow: rgba(155, 127, 212, 0.3);
+    --color-primary-focus: rgba(155, 127, 212, 0.15);
+    --color-primary-gradient-end: #4A2A7A;
+  }
+
+  html.theme-sky {
+    --color-primary: #5BBBDC;
+    --color-primary-hover: #3A9CC0;
+    --color-primary-dark: #2A7A9C;
+    --color-primary-light: #EEF8FD;
+    --color-primary-border: #B8E0EF;
+    --color-primary-track: #99D0E5;
+    --color-primary-light-alt: #F0FAFF;
+    --color-primary-shadow: rgba(91, 187, 220, 0.3);
+    --color-primary-focus: rgba(91, 187, 220, 0.15);
+    --color-primary-gradient-end: #1A6080;
   }
 
   html {
@@ -28,14 +78,14 @@
 @layer components {
   .card {
     background: var(--color-background-primary);
-    border: 0.5px solid #EDD0DC;
+    border: 0.5px solid var(--color-primary-border);
     border-radius: 12px;
     padding: 20px;
   }
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2;
-    background-color: #D88CA6;
+    background-color: var(--color-primary);
     color: #fff;
     font-weight: 500;
     font-size: 14px;
@@ -44,15 +94,15 @@
     padding: 0 20px;
     transition: background-color 0.15s, transform 0.1s;
   }
-  .btn-primary:hover { background-color: #D4537E; }
+  .btn-primary:hover { background-color: var(--color-primary-hover); }
   .btn-primary:active { transform: scale(0.97); }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-  .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(216,140,166,0.3); outline: none; }
+  .btn-primary:focus-visible { box-shadow: 0 0 0 3px var(--color-primary-shadow); outline: none; }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2;
-    border: 1.5px solid #D88CA6;
-    color: #D88CA6;
+    border: 1.5px solid var(--color-primary);
+    color: var(--color-primary);
     font-weight: 500;
     font-size: 14px;
     height: 44px;
@@ -61,23 +111,23 @@
     background: transparent;
     transition: border-color 0.15s, color 0.15s;
   }
-  .btn-secondary:hover { border-color: #D4537E; color: #D4537E; }
+  .btn-secondary:hover { border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
 
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-1.5;
-    background: #FBF0F4;
-    color: #B5607E;
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
     font-weight: 500;
     border-radius: 8px;
     padding: 10px 20px;
     transition: background-color 0.15s;
   }
-  .btn-ghost:hover { background: #F4C0D1; }
+  .btn-ghost:hover { background: var(--color-primary-track); }
 
   .input-field {
     width: 100%;
     height: 44px;
-    border: 1px solid #EDD0DC;
+    border: 1px solid var(--color-primary-border);
     border-radius: 8px;
     padding: 0 14px;
     font-size: 14px;
@@ -88,8 +138,8 @@
     outline: none;
   }
   .input-field:focus {
-    border-color: #D88CA6;
-    box-shadow: 0 0 0 3px rgba(216,140,166,0.15);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-focus);
   }
   .input-field::placeholder { color: #D3D1C7; }
 
@@ -104,13 +154,13 @@
   }
 
   .progress-bar-track {
-    background: #F4C0D1;
+    background: var(--color-primary-track);
     height: 6px;
     border-radius: 99px;
     overflow: hidden;
   }
   .progress-bar-fill {
-    background: #D88CA6;
+    background: var(--color-primary);
     height: 100%;
     border-radius: 99px;
     transition: width 0.5s ease;

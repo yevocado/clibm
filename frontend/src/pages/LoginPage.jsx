@@ -70,9 +70,9 @@ export default function LoginPage() {
           <div style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 80, height: 80, borderRadius: 24,
-            background: 'linear-gradient(135deg, #F4C0D1, #D88CA6)',
+            background: 'linear-gradient(135deg, var(--color-primary-track), var(--color-primary))',
             fontSize: 36, marginBottom: 24,
-            boxShadow: '0 8px 32px rgba(216,140,166,0.3)',
+            boxShadow: '0 8px 32px var(--color-primary-shadow)',
           }}>
             🧗
           </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: '#FBF0F4',
+                background: 'var(--color-primary-light)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 18, marginBottom: 10,
               }}>
@@ -147,11 +147,11 @@ export default function LoginPage() {
               transition: 'border-color 0.15s, background 0.15s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#D88CA6'
-              e.currentTarget.style.background = '#FBF0F4'
+              e.currentTarget.style.borderColor = 'var(--color-primary)'
+              e.currentTarget.style.background = 'var(--color-primary-light)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = '#EDD0DC'
+              e.currentTarget.style.borderColor = 'var(--color-primary-border)'
               e.currentTarget.style.background = '#fff'
             }}
           >

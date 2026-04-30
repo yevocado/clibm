@@ -85,7 +85,7 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {/* 헤더 */}
         <div style={{
-          background: 'linear-gradient(135deg, #D88CA6 0%, #993556 100%)',
+          background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-gradient-end) 100%)',
           padding: '20px 20px 18px',
           color: '#fff',
         }}>
@@ -138,7 +138,7 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
                     display: 'flex', alignItems: 'center', gap: 10,
                     paddingBottom: i < gymGroups.length - 1 ? 10 : 0,
                     marginBottom: i < gymGroups.length - 1 ? 10 : 0,
-                    borderBottom: i < gymGroups.length - 1 ? '0.5px solid #EDD0DC' : 'none',
+                    borderBottom: i < gymGroups.length - 1 ? '0.5px solid var(--color-primary-border)' : 'none',
                   }}
                 >
                   <span style={{ fontSize: 13, fontWeight: 600, color: '#444441', minWidth: 56, flexShrink: 0 }}>
@@ -149,15 +149,15 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
                       <div key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <div style={{
                           width: 11, height: 11, borderRadius: '50%',
-                          backgroundColor: c.hex, border: '0.5px solid #EDD0DC', flexShrink: 0,
+                          backgroundColor: c.hex, border: '0.5px solid var(--color-primary-border)', flexShrink: 0,
                         }} />
                         <span style={{ fontSize: 12, color: '#444441', fontWeight: 500 }}>{c.count}</span>
                       </div>
                     ))}
                   </div>
                   <span style={{
-                    fontSize: 11, fontWeight: 600, color: '#B5607E',
-                    background: '#FBF0F4', borderRadius: 4, padding: '2px 8px', flexShrink: 0,
+                    fontSize: 11, fontWeight: 600, color: 'var(--color-primary-dark)',
+                    background: 'var(--color-primary-light)', borderRadius: 4, padding: '2px 8px', flexShrink: 0,
                   }}>
                     {gymTotal}개
                   </span>
@@ -170,7 +170,7 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
         {/* 액션 버튼 */}
         <div style={{
           display: 'flex', gap: 10, padding: '12px 20px 16px',
-          borderTop: '0.5px solid #EDD0DC',
+          borderTop: '0.5px solid var(--color-primary-border)',
         }}>
           <button
             onClick={handleSave}
@@ -184,7 +184,7 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
               fontSize: 13, fontWeight: 500, cursor: saving ? 'default' : 'pointer',
               opacity: saving ? 0.6 : 1, transition: 'background 0.15s',
             }}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#FBF0F4' }}
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = 'var(--color-primary-light)' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#fff' }}
           >
             <Download size={14} />
@@ -196,13 +196,13 @@ export default function DailyShareButton({ todayClimbs, todayVisits = [], userNa
               flex: 1,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               height: 40, borderRadius: 8,
-              background: '#D88CA6', color: '#fff',
+              background: 'var(--color-primary)', color: '#fff',
               border: 'none',
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#D4537E' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#D88CA6' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-primary-hover)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)' }}
           >
             <Camera size={14} />
             카메라 촬영

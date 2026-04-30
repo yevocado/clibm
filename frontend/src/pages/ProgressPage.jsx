@@ -124,9 +124,9 @@ export default function ProgressPage() {
             onClick={() => setPeriodIdx(i)}
             className="px-4 py-1.5 rounded-full text-sm font-medium border transition-colors"
             style={{
-              backgroundColor: periodIdx === i ? '#D88CA6' : '#fff',
+              backgroundColor: periodIdx === i ? 'var(--color-primary)' : '#fff',
               color: periodIdx === i ? '#fff' : '#888780',
-              borderColor: periodIdx === i ? '#D88CA6' : '#EDD0DC',
+              borderColor: periodIdx === i ? 'var(--color-primary)' : 'var(--color-primary-border)',
             }}
           >
             {opt.label}
@@ -169,7 +169,7 @@ export default function ProgressPage() {
             style={{
               backgroundColor: filterGymId === 'all' ? '#444441' : '#fff',
               color: filterGymId === 'all' ? '#fff' : '#888780',
-              borderColor: filterGymId === 'all' ? '#444441' : '#EDD0DC',
+              borderColor: filterGymId === 'all' ? '#444441' : 'var(--color-primary-border)',
             }}
           >
             전체
@@ -182,7 +182,7 @@ export default function ProgressPage() {
               style={{
                 backgroundColor: filterGymId === g.id ? '#444441' : '#fff',
                 color: filterGymId === g.id ? '#fff' : '#888780',
-                borderColor: filterGymId === g.id ? '#444441' : '#EDD0DC',
+                borderColor: filterGymId === g.id ? '#444441' : 'var(--color-primary-border)',
               }}
             >
               {g.name}
@@ -197,7 +197,7 @@ export default function ProgressPage() {
           {[{ label: '이번달 완등', value: thisMonthCount }, { label: '저번달 완등', value: lastMonthCount }].map(({ label, value }) => (
             <div key={label} className="card text-center py-4 px-2">
               <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
-              <p className="font-bold text-xl" style={{ color: '#B5607E' }}>
+              <p className="font-bold text-xl" style={{ color: 'var(--color-primary-dark)' }}>
                 {value}<span className="text-sm font-medium ml-0.5" style={{ color: '#888780' }}>개</span>
               </p>
             </div>
@@ -206,7 +206,7 @@ export default function ProgressPage() {
       ) : (
         <div className="card text-center py-4 px-2 mb-5">
           <p className="text-xs mb-1" style={{ color: '#888780' }}>총 완등</p>
-          <p className="font-bold text-xl" style={{ color: '#B5607E' }}>
+          <p className="font-bold text-xl" style={{ color: 'var(--color-primary-dark)' }}>
             {totalCount}<span className="text-sm font-medium ml-0.5" style={{ color: '#888780' }}>개</span>
           </p>
         </div>
@@ -226,7 +226,7 @@ export default function ProgressPage() {
                     const dot = (hex) => ({
                       width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
                       backgroundColor: hex ?? '#F3F3F1',
-                      border: (!hex || hex === '#FFFFFF' || hex === '#E5E7EB') ? '1.5px solid #EDD0DC' : '1.5px solid transparent',
+                      border: (!hex || hex === '#FFFFFF' || hex === '#E5E7EB') ? '1.5px solid var(--color-primary-border)' : '1.5px solid transparent',
                       boxShadow: hex ? '0 1px 4px rgba(0,0,0,0.10)' : 'none',
                     })
                     return (
@@ -235,13 +235,13 @@ export default function ProgressPage() {
                         <div className="flex items-center gap-2">
                           <div className="flex flex-col items-center gap-1">
                             <div style={dot(b.prev?.hex ?? null)} />
-                            <p className="text-xs font-medium" style={{ color: b.prev ? '#B5607E' : '#C9C7BD' }}>{b.prev?.label ?? '-'}</p>
+                            <p className="text-xs font-medium" style={{ color: b.prev ? 'var(--color-primary-dark)' : '#C9C7BD' }}>{b.prev?.label ?? '-'}</p>
                             <p className="text-xs" style={{ color: '#C9C7BD' }}>저번달</p>
                           </div>
-                          <span className="text-sm pb-5" style={{ color: '#EDD0DC' }}>→</span>
+                          <span className="text-sm pb-5" style={{ color: 'var(--color-primary-border)' }}>→</span>
                           <div className="flex flex-col items-center gap-1">
                             <div style={dot(b.current?.hex ?? null)} />
-                            <p className="text-xs font-medium" style={{ color: b.current ? '#B5607E' : '#C9C7BD' }}>{b.current?.label ?? '-'}</p>
+                            <p className="text-xs font-medium" style={{ color: b.current ? 'var(--color-primary-dark)' : '#C9C7BD' }}>{b.current?.label ?? '-'}</p>
                             <p className="text-xs" style={{ color: '#C9C7BD' }}>이번달</p>
                           </div>
                         </div>
@@ -264,14 +264,14 @@ export default function ProgressPage() {
                           width: 36, height: 36,
                           backgroundColor: b.hex,
                           border: b.hex === '#FFFFFF' || b.hex === '#E5E7EB'
-                            ? '1.5px solid #EDD0DC'
+                            ? '1.5px solid var(--color-primary-border)'
                             : '1.5px solid transparent',
                           boxShadow: '0 1px 4px rgba(0,0,0,0.10)',
                         }}
                       />
                       <div>
                         <p className="text-xs" style={{ color: '#888780' }}>{b.brandName}</p>
-                        <p className="text-sm font-semibold" style={{ color: '#B5607E' }}>{b.label}</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--color-primary-dark)' }}>{b.label}</p>
                       </div>
                     </div>
                   ))}
@@ -288,7 +288,7 @@ export default function ProgressPage() {
               </p>
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#EDD0DC" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-primary-border)" vertical={false} />
                   <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#888780' }} interval="preserveStartEnd" />
                   <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#888780' }} />
                   <Tooltip
@@ -297,14 +297,14 @@ export default function ProgressPage() {
                       return (
                         <div className="card py-2 px-3 text-sm" style={{ minWidth: 90 }}>
                           <p className="text-xs mb-1" style={{ color: '#888780' }}>{label}</p>
-                          <p className="font-semibold" style={{ color: '#D88CA6' }}>{payload[0].value}개</p>
+                          <p className="font-semibold" style={{ color: 'var(--color-primary)' }}>{payload[0].value}개</p>
                         </div>
                       )
                     }}
                   />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={32}>
                     {chartData.map((_, i) => (
-                      <Cell key={i} fill={i === chartData.length - 1 ? '#D88CA6' : '#F4C0D1'} />
+                      <Cell key={i} fill={i === chartData.length - 1 ? 'var(--color-primary)' : 'var(--color-primary-track)'} />
                     ))}
                   </Bar>
                 </BarChart>

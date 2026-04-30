@@ -23,7 +23,7 @@ export default function ClimbCard({ climb, onDelete }) {
           width: 44,
           height: 44,
           backgroundColor: gradeColor,
-          border: '1px solid #EDD0DC',
+          border: '1px solid var(--color-primary-border)',
         }}
       />
 
@@ -34,7 +34,7 @@ export default function ClimbCard({ climb, onDelete }) {
           {climb.count > 1 && (
             <span
               className="text-xs font-medium px-1.5 py-0.5 rounded-full"
-              style={{ background: '#FBF0F4', color: '#B5607E' }}
+              style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}
             >
               ×{climb.count}
             </span>

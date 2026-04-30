@@ -251,7 +251,7 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
             <span style={{ fontWeight: 700, fontSize: 12, color: '#444441', letterSpacing: -0.3 }}>
               🧗 {userName}의 벽
             </span>
-            <span style={{ fontWeight: 700, fontSize: 18, color: '#B5607E', lineHeight: 1 }}>
+            <span style={{ fontWeight: 700, fontSize: 18, color: 'var(--color-primary-dark)', lineHeight: 1 }}>
               {totalCount}<span style={{ fontSize: 10, fontWeight: 500, color: '#888780', marginLeft: 2 }}>개</span>
             </span>
           </div>
@@ -262,7 +262,7 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
           {/* 암장별 색상 */}
           {gymGroups.map((gym, i) => (
             <div key={gym.gymName} style={{ marginBottom: i < gymGroups.length - 1 ? 8 : 0 }}>
-              <p style={{ fontSize: 9, fontWeight: 500, color: '#B5607E', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 6 }}>
+              <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-primary-dark)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 6 }}>
                 {gym.gymName}
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -310,7 +310,7 @@ export default function CameraOverlay({ gymGroups, todayVisits = [], userName = 
           {capturing && (
             <div style={{
               width: 26, height: 26, borderRadius: '50%',
-              border: '3px solid #D88CA6',
+              border: '3px solid var(--color-primary)',
               borderTopColor: 'transparent',
               animation: 'spin 0.8s linear infinite',
             }} />

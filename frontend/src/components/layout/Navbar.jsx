@@ -21,7 +21,7 @@ export default function Navbar() {
   return (
     <>
       {/* 상단 바 */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white" style={{ borderBottom: '1px solid #EDD0DC' }}>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white" style={{ borderBottom: '1px solid var(--color-primary-border)' }}>
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/dashboard" className="font-bold text-base" style={{ color: '#444441', letterSpacing: '-0.3px' }}>
             벽로그
@@ -37,8 +37,8 @@ export default function Navbar() {
                   to={to}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-btn text-sm transition-colors"
                   style={{
-                    color: active ? '#D88CA6' : '#888780',
-                    background: active ? '#FBF0F4' : 'transparent',
+                    color: active ? 'var(--color-primary)' : '#888780',
+                    background: active ? 'var(--color-primary-light)' : 'transparent',
                     fontWeight: active ? 600 : 500,
                   }}
                 >
@@ -66,7 +66,7 @@ export default function Navbar() {
       {/* 하단 탭 바 (모바일) */}
       <nav
         className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white flex"
-        style={{ borderTop: '1px solid #EDD0DC' }}
+        style={{ borderTop: '1px solid var(--color-primary-border)' }}
       >
         {navItems.map(({ to, label, Icon }) => {
           const active = location.pathname.startsWith(to)
@@ -75,7 +75,7 @@ export default function Navbar() {
               key={to}
               to={to}
               className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 transition-colors"
-              style={{ color: active ? '#D88CA6' : '#D3D1C7' }}
+              style={{ color: active ? 'var(--color-primary)' : '#D3D1C7' }}
             >
               <Icon size={22} />
               <span style={{ fontSize: 10, fontWeight: active ? 600 : 500 }}>{label}</span>

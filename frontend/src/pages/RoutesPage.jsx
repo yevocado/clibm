@@ -76,7 +76,7 @@ function MonthCalendar({ climbs, month, onMonthChange }) {
                   {colorEntries.slice(0, 4).map(([hex]) => (
                     <div
                       key={hex}
-                      style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: hex, border: '0.5px solid #EDD0DC' }}
+                      style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: hex, border: '0.5px solid var(--color-primary-border)' }}
                     />
                   ))}
                 </div>
@@ -114,7 +114,7 @@ function DayCard({ date, climbs, onDelete, onUpdate }) {
     <div className="card">
       <div className="flex items-center justify-between mb-3">
         <span className="font-semibold text-sm" style={{ color: '#444441' }}>{formattedDate}</span>
-        <span className="text-xs font-medium" style={{ color: '#B5607E' }}>총 {totalCount}개</span>
+        <span className="text-xs font-medium" style={{ color: 'var(--color-primary-dark)' }}>총 {totalCount}개</span>
       </div>
 
       <div className="space-y-4">
@@ -131,20 +131,20 @@ function DayCard({ date, climbs, onDelete, onUpdate }) {
                     {isEditing ? (
                       <div
                         className="flex flex-col items-center gap-1.5 rounded-2xl py-2 px-2"
-                        style={{ background: '#FBF0F4', border: '1px solid #EDD0DC', minWidth: 80 }}
+                        style={{ background: 'var(--color-primary-light)', border: '1px solid var(--color-primary-border)', minWidth: 80 }}
                       >
                         {/* 카운터 */}
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleCountChange(entry, -1)}
-                            style={{ width: 22, height: 22, borderRadius: '50%', background: '#EDD0DC', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                            style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--color-primary-border)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                           >
                             <Minus size={10} color="#B5607E" />
                           </button>
                           <span className="font-bold text-sm w-5 text-center" style={{ color: '#444441' }}>{entry.count ?? 1}</span>
                           <button
                             onClick={() => handleCountChange(entry, 1)}
-                            style={{ width: 22, height: 22, borderRadius: '50%', background: '#EDD0DC', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                            style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--color-primary-border)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                           >
                             <Plus size={10} color="#B5607E" />
                           </button>
@@ -154,14 +154,14 @@ function DayCard({ date, climbs, onDelete, onUpdate }) {
                           <button
                             onClick={() => setEditingId(null)}
                             className="text-xs font-medium px-2 py-0.5 rounded-full"
-                            style={{ background: '#fff', color: '#888780', border: '1px solid #EDD0DC' }}
+                            style={{ background: '#fff', color: '#888780', border: '1px solid var(--color-primary-border)' }}
                           >
                             완료
                           </button>
                           <button
                             onClick={() => { if (confirm('삭제할까요?')) { onDelete(entry.id); setEditingId(null) } }}
                             className="text-xs font-medium px-2 py-0.5 rounded-full"
-                            style={{ background: '#fff', color: '#B5607E', border: '1px solid #EDD0DC' }}
+                            style={{ background: '#fff', color: 'var(--color-primary-dark)', border: '1px solid var(--color-primary-border)' }}
                           >
                             삭제
                           </button>
@@ -174,7 +174,7 @@ function DayCard({ date, climbs, onDelete, onUpdate }) {
                         style={{
                           width: 44, height: 44,
                           backgroundColor: entry.gradeColor,
-                          border: '1px solid #EDD0DC',
+                          border: '1px solid var(--color-primary-border)',
                           fontSize: 15,
                           lineHeight: 1,
                           padding: 0,
@@ -200,7 +200,7 @@ function DayCard({ date, climbs, onDelete, onUpdate }) {
               </div>
             )}
             {gi < gymGroups.length - 1 && (
-              <div style={{ height: '0.5px', background: '#EDD0DC', marginTop: 12 }} />
+              <div style={{ height: '0.5px', background: 'var(--color-primary-border)', marginTop: 12 }} />
             )}
           </div>
         ))}
@@ -278,9 +278,9 @@ export default function RoutesPage() {
             onClick={() => setFilterGymId('all')}
             className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
             style={{
-              backgroundColor: filterGymId === 'all' ? '#D88CA6' : '#fff',
+              backgroundColor: filterGymId === 'all' ? 'var(--color-primary)' : '#fff',
               color: filterGymId === 'all' ? '#fff' : '#888780',
-              borderColor: filterGymId === 'all' ? '#D88CA6' : '#EDD0DC',
+              borderColor: filterGymId === 'all' ? 'var(--color-primary)' : 'var(--color-primary-border)',
             }}
           >
             전체
@@ -291,9 +291,9 @@ export default function RoutesPage() {
               onClick={() => setFilterGymId(filterGymId === g.id ? 'all' : g.id)}
               className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
               style={{
-                backgroundColor: filterGymId === g.id ? '#D88CA6' : '#fff',
+                backgroundColor: filterGymId === g.id ? 'var(--color-primary)' : '#fff',
                 color: filterGymId === g.id ? '#fff' : '#888780',
-                borderColor: filterGymId === g.id ? '#D88CA6' : '#EDD0DC',
+                borderColor: filterGymId === g.id ? 'var(--color-primary)' : 'var(--color-primary-border)',
               }}
             >
               {g.name}

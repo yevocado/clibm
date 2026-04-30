@@ -27,12 +27,12 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups, todayVisits =
         background: '#fff',
         borderRadius: 20,
         overflow: 'hidden',
-        border: '0.5px solid #EDD0DC',
+        border: '0.5px solid var(--color-primary-border)',
       }}
     >
       {/* 헤더 */}
       <div style={{
-        background: 'linear-gradient(135deg, #D88CA6 0%, #993556 100%)',
+        background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-gradient-end) 100%)',
         padding: '20px 24px 16px',
         color: '#fff',
       }}>
@@ -82,7 +82,7 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups, todayVisits =
                   display: 'flex', alignItems: 'center', gap: 10,
                   paddingBottom: i < gymGroups.length - 1 ? 10 : 0,
                   marginBottom: i < gymGroups.length - 1 ? 10 : 0,
-                  borderBottom: i < gymGroups.length - 1 ? '0.5px solid #EDD0DC' : 'none',
+                  borderBottom: i < gymGroups.length - 1 ? '0.5px solid var(--color-primary-border)' : 'none',
                 }}
               >
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#444441', minWidth: 60, flexShrink: 0 }}>
@@ -93,15 +93,15 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups, todayVisits =
                     <div key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <div style={{
                         width: 12, height: 12, borderRadius: '50%',
-                        backgroundColor: c.hex, border: '0.5px solid #EDD0DC', flexShrink: 0,
+                        backgroundColor: c.hex, border: '0.5px solid var(--color-primary-border)', flexShrink: 0,
                       }} />
                       <span style={{ fontSize: 12, color: '#444441', fontWeight: 500 }}>{c.count}</span>
                     </div>
                   ))}
                 </div>
                 <span style={{
-                  fontSize: 11, fontWeight: 600, color: '#B5607E',
-                  background: '#FBF0F4', borderRadius: 4, padding: '2px 8px', flexShrink: 0,
+                  fontSize: 11, fontWeight: 600, color: 'var(--color-primary-dark)',
+                  background: 'var(--color-primary-light)', borderRadius: 4, padding: '2px 8px', flexShrink: 0,
                 }}>
                   {gymTotal}개
                 </span>
@@ -112,7 +112,7 @@ const ShareCard = forwardRef(function ShareCard({ date, gymGroups, todayVisits =
       )}
 
       {/* 푸터 */}
-      <div style={{ background: '#F5F3F0', padding: '8px 24px', borderTop: '0.5px solid #EDD0DC' }}>
+      <div style={{ background: '#F5F3F0', padding: '8px 24px', borderTop: '0.5px solid var(--color-primary-border)' }}>
         <p style={{ fontSize: 10, color: '#D3D1C7', textAlign: 'center', fontWeight: 500 }}>벽로그로 기록하세요 🏔️</p>
       </div>
     </div>

@@ -36,9 +36,9 @@ function GoalForm({ onSubmit, onCancel, brands }) {
               onClick={() => { setGymBrand(b.name); setTargetColor(null) }}
               className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
               style={{
-                backgroundColor: gymBrand === b.name ? '#D88CA6' : '#fff',
+                backgroundColor: gymBrand === b.name ? 'var(--color-primary)' : '#fff',
                 color: gymBrand === b.name ? '#fff' : '#888780',
-                borderColor: gymBrand === b.name ? '#D88CA6' : '#EDD0DC',
+                borderColor: gymBrand === b.name ? 'var(--color-primary)' : 'var(--color-primary-border)',
               }}
             >
               {b.name}
@@ -66,14 +66,14 @@ function GoalForm({ onSubmit, onCancel, brands }) {
                     style={{
                       width: 40, height: 40,
                       backgroundColor: c.hex,
-                      border: selected ? '3px solid #D88CA6' : '1.5px solid #EDD0DC',
-                      boxShadow: selected ? '0 0 0 3px #F4C0D1' : 'none',
+                      border: selected ? '3px solid #D88CA6' : '1.5px solid var(--color-primary-border)',
+                      boxShadow: selected ? '0 0 0 3px var(--color-primary-track)' : 'none',
                       transition: 'box-shadow 0.15s, border-color 0.15s',
                     }}
                   />
                   <span style={{
                     fontSize: 10,
-                    color: selected ? '#B5607E' : '#888780',
+                    color: selected ? 'var(--color-primary-dark)' : '#888780',
                     fontWeight: selected ? 600 : 400,
                   }}>
                     {c.label}
@@ -152,7 +152,7 @@ function GoalCard({ goal, currentCount, onDelete }) {
   const targetNum = goal.targetCount ?? goal.targetLevel ?? 1
   const progress = Math.min(100, Math.round((currentCount / targetNum) * 100))
   const achieved = currentCount >= targetNum
-  const hex = goal.targetColor?.hex ?? '#D88CA6'
+  const hex = goal.targetColor?.hex ?? 'var(--color-primary)'
 
   const daysLeft = goal.deadline
     ? Math.ceil((new Date(goal.deadline + 'T00:00:00') - new Date()) / 86400000)
@@ -162,7 +162,7 @@ function GoalCard({ goal, currentCount, onDelete }) {
     <div className="card" style={{ padding: '12px 14px' }}>
       {/* 한 줄 헤더 */}
       <div className="flex items-center gap-2.5 mb-2">
-        <div className="rounded-full shrink-0" style={{ width: 24, height: 24, backgroundColor: hex, border: '1.5px solid #EDD0DC' }} />
+        <div className="rounded-full shrink-0" style={{ width: 24, height: 24, backgroundColor: hex, border: '1.5px solid var(--color-primary-border)' }} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs" style={{ color: '#888780' }}>{goal.gymBrand ?? '전체'}</span>
@@ -170,7 +170,7 @@ function GoalCard({ goal, currentCount, onDelete }) {
             <span className="font-semibold text-sm" style={{ color: achieved ? '#F59E0B' : '#444441' }}>
               {goal.targetColor?.label ?? `Lv.${goal.targetLevel}`}
             </span>
-            <span className="text-sm font-semibold" style={{ color: '#D88CA6' }}>{targetNum}개</span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>{targetNum}개</span>
             {achieved && <Trophy size={12} style={{ color: '#F59E0B' }} />}
             {achieved && (
               <span className="text-xs font-medium px-1.5 py-0.5 rounded-full" style={{ background: '#FEF3C7', color: '#D97706' }}>달성!</span>
@@ -178,7 +178,7 @@ function GoalCard({ goal, currentCount, onDelete }) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="font-bold text-sm" style={{ color: '#B5607E' }}>{progress}%</span>
+          <span className="font-bold text-sm" style={{ color: 'var(--color-primary-dark)' }}>{progress}%</span>
           <button
             onClick={() => { if (confirm('목표를 삭제할까요?')) onDelete(goal.id) }}
             className="p-0.5"
@@ -200,7 +200,7 @@ function GoalCard({ goal, currentCount, onDelete }) {
       <div className="flex justify-between items-center">
         <span className="text-xs" style={{ color: '#888780' }}>{currentCount} / {targetNum}개</span>
         {goal.deadline && (
-          <span className="text-xs" style={{ color: daysLeft !== null && daysLeft < 0 ? '#D88CA6' : '#888780' }}>
+          <span className="text-xs" style={{ color: daysLeft !== null && daysLeft < 0 ? 'var(--color-primary)' : '#888780' }}>
             {daysLeft !== null && daysLeft >= 0 ? `D-${daysLeft} · ${goal.deadline}` : `기한 지남 · ${goal.deadline}`}
           </span>
         )}

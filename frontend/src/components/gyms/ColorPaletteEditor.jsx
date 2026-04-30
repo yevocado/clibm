@@ -24,7 +24,7 @@ function ColorDotGrid({ selected, onSelect }) {
   return (
     <div
       className="flex flex-wrap gap-2 p-3 rounded-xl mt-1"
-      style={{ background: '#FFF8FB', border: '1px solid #EDD0DC' }}
+      style={{ background: 'var(--color-primary-light-alt)', border: '1px solid #EDD0DC' }}
     >
       {PRESET_COLORS.map((c) => (
         <button
@@ -38,7 +38,7 @@ function ColorDotGrid({ selected, onSelect }) {
             height: 32,
             backgroundColor: c.hex,
             border: selected === c.hex
-              ? '3px solid #D88CA6'
+              ? '3px solid var(--color-primary)'
               : (c.hex === '#FFFFFF' || c.hex === '#E5E7EB')
               ? '1.5px solid #EDD0DC'
               : '1.5px solid transparent',
@@ -132,7 +132,7 @@ export default function ColorPaletteEditor({ colors, onChange }) {
           type="button"
           onClick={() => setOpenIdx(openIdx === 'new' ? null : 'new')}
           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-          style={{ border: '1.5px dashed #EDD0DC', color: '#D88CA6', background: 'transparent' }}
+          style={{ border: '1.5px dashed #EDD0DC', color: 'var(--color-primary)', background: 'transparent' }}
         >
           + 색상 추가
         </button>

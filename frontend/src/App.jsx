@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import LoadingSpinner from './components/common/LoadingSpinner'
 import Navbar from './components/layout/Navbar'
 import LoginPage from './pages/LoginPage'
@@ -30,6 +31,7 @@ function PublicOnly() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <HashRouter>
         <Routes>
@@ -51,5 +53,6 @@ export default function App() {
         </Routes>
       </HashRouter>
     </AuthProvider>
+    </ThemeProvider>
   )
 }
