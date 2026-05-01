@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { signInWithRedirect, signInWithPopup } from 'firebase/auth'
+import { Capacitor } from '@capacitor/core'
 import { auth, googleProvider } from '../firebase'
 
 const FEATURES = [
@@ -42,9 +43,12 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
     try {
-      await signInWithPopup(auth, googleProvider)
+      if (Capacitor.isNativePlatform()) {
+        await signInWithRedirect(auth, googleProvider)
+      } else {
+        await signInWithPopup(auth, googleProvider)
+      }
     } catch (err) {
-      // 팝업 차단된 경우 리다이렉트로 폴백
       if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
         try {
           await signInWithRedirect(auth, googleProvider)
